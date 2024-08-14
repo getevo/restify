@@ -2,9 +2,13 @@ package restify
 
 import (
 	"fmt"
+	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/application"
 	"github.com/getevo/evo/v2/lib/db"
+	"math"
 )
+
+var Prefix = "/admin/rest"
 
 type App struct{}
 
@@ -21,11 +25,19 @@ func (app App) Router() error {
 }
 
 func (app App) WhenReady() error {
+
+	var controller Controller
+	for idx, _ := range resources {
+		for i, _ := range resources[idx].Actions {
+			resources[idx].Actions[i].RegisterRouter()
+		}
+	}
+	evo.Get(Prefix+"/models", controller.Models)
 	return nil
 }
 
 func (app App) Priority() application.Priority {
-	return application.LOWEST
+	return math.MaxInt32
 }
 
 func (app App) Name() string {

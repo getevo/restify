@@ -1,4 +1,4 @@
-module github.com/getevo/restify/v1
+module github.com/getevo/restify
 
 go 1.22
 
