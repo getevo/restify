@@ -78,8 +78,25 @@ func UseModel(model any) *Resource {
 			Handler:     handler.Create,
 			Description: "create an object using given values",
 		})
+
+		resource.SetAction(&Endpoint{
+			Name:        "BATCH.CREATE",
+			Method:      MethodPUT,
+			URL:         "/batch",
+			PKUrl:       false,
+			Handler:     handler.BatchCreate,
+			Description: "create a batch of objects",
+		})
 	}
 	if !features.DisableUpdate {
+		resource.SetAction(&Endpoint{
+			Name:        "BATCH.UPDATE",
+			Method:      MethodPOST,
+			URL:         "/batch",
+			PKUrl:       false,
+			Handler:     handler.BatchUpdate,
+			Description: "update batch objects",
+		})
 		resource.SetAction(&Endpoint{
 			Name:        "UPDATE",
 			Method:      MethodPOST,
@@ -88,8 +105,17 @@ func UseModel(model any) *Resource {
 			Handler:     handler.Update,
 			Description: "update single object select using primary key",
 		})
+
 	}
 	if !features.DisableDelete {
+		resource.SetAction(&Endpoint{
+			Name:        "BATCH.DELETE",
+			Method:      MethodDELETE,
+			URL:         "/batch",
+			PKUrl:       false,
+			Handler:     handler.BatchDelete,
+			Description: "batch delete objects",
+		})
 		resource.SetAction(&Endpoint{
 			Name:        "DELETE",
 			Method:      MethodDELETE,

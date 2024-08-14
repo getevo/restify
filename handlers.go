@@ -1,7 +1,6 @@
 package restify
 
 import (
-	"github.com/getevo/evo/v2/lib/db"
 	"github.com/getevo/evo/v2/lib/errors"
 	"gorm.io/gorm/clause"
 )
@@ -66,7 +65,7 @@ func (Handler) Create(context *Context) *errors.HTTPError {
 			return context.Error(err, 412)
 		}
 	}
-	if err := dbo.Create(ptr).Error; err != nil {
+	if err := dbo.Omit(clause.Associations).Create(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
 
@@ -75,6 +74,50 @@ func (Handler) Create(context *Context) *errors.HTTPError {
 			return context.Error(err, 500)
 		}
 	}
+	context.Response.Data = ptr
+	return nil
+}
+
+func (Handler) BatchCreate(context *Context) *errors.HTTPError {
+	if !context.HasPermission("CREATE") {
+		return &ErrorPermissionDenied
+	}
+	var dbo = context.GetDBO()
+	object := context.CreateIndirectSlice()
+	ptr := object.Addr().Interface()
+
+	err := context.Request.BodyParser(ptr)
+	if err != nil {
+		return context.Error(err, 400)
+	}
+	for i := 0; i < object.Len(); i++ {
+		var v = object.Index(i).Addr().Interface()
+		if obj, ok := v.(interface{ OnBeforeCreate(context *Context) error }); ok {
+			err := obj.OnBeforeCreate(context)
+			if err != nil {
+				return context.Error(err, 500)
+			}
+		}
+		if obj, ok := v.(interface{ ValidateCreate(context *Context) error }); ok {
+			if err := obj.ValidateCreate(context); err != nil {
+				return context.Error(err, 412)
+			}
+		}
+	}
+
+	if err := dbo.Omit(clause.Associations).Create(ptr).Error; err != nil {
+		return context.Error(err, 500)
+	}
+
+	for i := 0; i < object.Len(); i++ {
+		var v = object.Index(i).Addr().Interface()
+		if obj, ok := v.(interface{ OnAfterCreate(context *Context) error }); ok {
+			if err := obj.OnAfterCreate(context); err != nil {
+				return context.Error(err, 500)
+			}
+		}
+	}
+
 	context.Response.Data = ptr
 	return nil
 }
@@ -126,6 +169,51 @@ func (Handler) Update(context *Context) *errors.HTTPError {
 			return context.Error(err, 500)
 		}
 	}
+	context.Response.Data = ptr
+
+	return nil
+}
+
+func (Handler) BatchUpdate(context *Context) *errors.HTTPError {
+	if !context.HasPermission("UPDATE") {
+		return &ErrorPermissionDenied
+	}
+
+	object := context.CreateIndirectObject()
+	ptr := object.Addr().Interface()
+
+	var query = context.GetDBO().Model(ptr)
+	var httpErr *errors.HTTPError
+	query, httpErr = context.ApplyFilters(query)
+	if httpErr != nil {
+		return httpErr
+	}
+	err := context.Request.BodyParser(ptr)
+	if err != nil {
+		return context.Error(err, 500)
+	}
+	query.Debug().Omit(clause.Associations).Updates(ptr)
+	if context.Request.Query("return").String() != "" {
+		var slice = context.CreateIndirectSlice()
+		ptr = slice.Addr().Interface()
+		query.Find(ptr)
+
+		for i := 0; i < slice.Len(); i++ {
+			var v = slice.Index(i).Addr().Interface()
+			if obj, ok := v.(interface{ OnAfterUpdate(context *Context) error }); ok {
+				if err := obj.OnAfterUpdate(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
+			if obj, ok := v.(interface{ OnAfterGet(context *Context) error }); ok {
+				if err := obj.OnAfterGet(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+		}
+	}
+
 	context.Response.Data = ptr
 
 	return nil
@@ -240,7 +328,7 @@ func (Handler) Paginate(context *Context) *errors.HTTPError {
 	context.Response.Offset = p.GetOffset()
 	context.Response.Page = p.Page
 
-	var query = db.Model(ptr)
+	var query = context.GetDBO().Model(ptr)
 	var httpErr *errors.HTTPError
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
@@ -298,5 +386,24 @@ func (Handler) Get(context *Context) *errors.HTTPError {
 	}
 
 	context.Response.Data = ptr
+	return nil
+}
+
+func (h Handler) BatchDelete(context *Context) *errors.HTTPError {
+	if !context.HasPermission("DELETE") {
+		return &ErrorPermissionDenied
+	}
+
+	object := context.CreateIndirectObject()
+	ptr := object.Addr().Interface()
+
+	var query = context.GetDBO().Model(ptr)
+	var httpErr *errors.HTTPError
+	query, httpErr = context.ApplyFilters(query)
+	if httpErr != nil {
+		return httpErr
+	}
+	query.Debug().Omit(clause.Associations).Delete(ptr)
+
 	return nil
 }
