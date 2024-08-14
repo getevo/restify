@@ -20,21 +20,22 @@ import (
 // - SetCurrentPage: Sets the current page based on the provided value. If the value is 0, the current page is set to 1.
 // - SetLimit: Sets the limit of rows per page. If the value is 0, the limit is set to the minimum limit of 10. If the limit is less than the minimum limit, it is set to the minimum
 type Pagination struct {
-	Records    int         `json:"records,omitempty"`    // Total rows
-	Pages      int         `json:"pages,omitempty"`      // total number of pages
-	Limit      int         `json:"limit,omitempty"`      // number of rows per page
-	First      int         `json:"first,omitempty"`      // First Page
-	Last       int         `json:"last,omitempty"`       // Last Page
-	PageRange  []int       `json:"page_range,omitempty"` // Range of visible pages
-	Data       interface{} `json:"data,omitempty"`
-	Total      int64       `json:"total"`
-	Offset     int         `json:"offset"`
-	TotalPages int         `json:"total_pages"`
-	Page       int         `json:"current_page"`
-	Size       int         `json:"size"`
-	Success    bool        `json:"success"`
-	Error      string      `json:"error"`
-	Type       string      `json:"type"`
+	Records         int               `json:"records,omitempty"`    // Total rows
+	Pages           int               `json:"pages,omitempty"`      // total number of pages
+	Limit           int               `json:"limit,omitempty"`      // number of rows per page
+	First           int               `json:"first,omitempty"`      // First Page
+	Last            int               `json:"last,omitempty"`       // Last Page
+	PageRange       []int             `json:"page_range,omitempty"` // Range of visible pages
+	Data            interface{}       `json:"data,omitempty"`
+	Total           int64             `json:"total"`
+	Offset          int               `json:"offset"`
+	TotalPages      int               `json:"total_pages"`
+	Page            int               `json:"current_page"`
+	Size            int               `json:"size"`
+	Success         bool              `json:"success"`
+	Error           string            `json:"error"`
+	Type            string            `json:"type"`
+	ValidationError []ValidationError `json:"validation_error"`
 }
 
 // SetCurrentPage sets the value of CurrentPage in the Pagination struct.

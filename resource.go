@@ -4,7 +4,7 @@ import (
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/db"
 	"github.com/getevo/evo/v2/lib/errors"
-	"github.com/getevo/evo/v2/lib/outcome"
+	"github.com/getevo/evo/v2/lib/text"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/iancoleman/strcase"
 	"golang.org/x/text/cases"
@@ -110,6 +110,7 @@ type Context struct {
 	Action   *Endpoint
 	Response *Pagination
 	Schema   *schema.Schema
+	Code     int
 }
 
 // handler handles the incoming request and returns a response.
@@ -136,8 +137,15 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 	} else {
 		context.HandleError(&ErrorHandlerNotFound)
 	}
-
-	return outcome.Json(context.PrepareResponse())
+	var response = context.PrepareResponse()
+	if context.Code == 0 {
+		request.Status(200)
+	} else {
+		request.Status(context.Code)
+	}
+	request.SetHeader("Content-Type", "application/json; charset=utf-8")
+	request.Write(text.ToJSON(response))
+	return nil
 }
 
 func (action *Endpoint) RegisterRouter() {
@@ -217,7 +225,7 @@ func (context *Context) HandleError(error *errors.HTTPError) {
 	if error != nil && len(error.Errors) > 0 {
 		context.Response.Error = error.Errors[0]
 		context.Response.Success = false
-		context.Request.Status(error.StatusCode)
+		context.Code = error.StatusCode
 	}
 
 }

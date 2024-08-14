@@ -65,6 +65,11 @@ func (Handler) Create(context *Context) *errors.HTTPError {
 			return context.Error(err, 412)
 		}
 	}
+
+	if !context.Validate(ptr) {
+		return nil
+	}
+
 	if err := dbo.Omit(clause.Associations).Create(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
@@ -102,6 +107,9 @@ func (Handler) BatchCreate(context *Context) *errors.HTTPError {
 			if err := obj.ValidateCreate(context); err != nil {
 				return context.Error(err, 412)
 			}
+		}
+		if !context.Validate(v) {
+			return nil
 		}
 	}
 
@@ -159,6 +167,11 @@ func (Handler) Update(context *Context) *errors.HTTPError {
 			return context.Error(err, 500)
 		}
 	}
+
+	if !context.Validate(ptr) {
+		return nil
+	}
+
 	//evo.Dump(ptr)
 	if err := dbo.Debug().Omit(clause.Associations).Save(ptr).Error; err != nil {
 		return context.Error(err, 500)
