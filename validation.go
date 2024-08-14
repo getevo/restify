@@ -15,7 +15,7 @@ func (context *Context) Validate(ptr any) bool {
 	if len(errs) > 0 {
 
 		context.Response.Success = false
-		context.Code = 400
+		context.Code = 412
 		for _, item := range errs {
 			var chunks = strings.SplitN(item.Error(), " ", 2)
 			var v = ValidationError{

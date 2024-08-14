@@ -78,7 +78,6 @@ func UseModel(model any) *Resource {
 			Handler:     handler.Create,
 			Description: "create an object using given values",
 		})
-
 		resource.SetAction(&Endpoint{
 			Name:        "BATCH.CREATE",
 			Method:      MethodPUT,

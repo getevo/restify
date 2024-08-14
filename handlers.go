@@ -402,6 +402,7 @@ func (Handler) Get(context *Context) *errors.HTTPError {
 	return nil
 }
 
+// BatchDelete delete multiple objects in the database
 func (h Handler) BatchDelete(context *Context) *errors.HTTPError {
 	if !context.HasPermission("DELETE") {
 		return &ErrorPermissionDenied
