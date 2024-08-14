@@ -24,6 +24,7 @@ type Method string
 const (
 	MethodGET    Method = "GET"
 	MethodPOST   Method = "POST"
+	MethodPatch  Method = "POST"
 	MethodPUT    Method = "PUT"
 	MethodDELETE Method = "DELETE"
 )

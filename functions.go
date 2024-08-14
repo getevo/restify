@@ -90,7 +90,7 @@ func UseModel(model any) *Resource {
 	if !features.DisableUpdate {
 		resource.SetAction(&Endpoint{
 			Name:        "BATCH.UPDATE",
-			Method:      MethodPOST,
+			Method:      MethodPatch,
 			URL:         "/batch",
 			PKUrl:       false,
 			Handler:     handler.BatchUpdate,
@@ -98,7 +98,7 @@ func UseModel(model any) *Resource {
 		})
 		resource.SetAction(&Endpoint{
 			Name:        "UPDATE",
-			Method:      MethodPOST,
+			Method:      MethodPatch,
 			URL:         "/",
 			PKUrl:       true,
 			Handler:     handler.Update,

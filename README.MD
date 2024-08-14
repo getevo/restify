@@ -57,6 +57,97 @@ Before you begin, ensure you have the following installed:
 
 
 
+### Endpoints
+
+After registering a model, Restify will expose several default endpoints. These endpoints support both `x-form-urlencode` and `application/json` body content types.
+
+| **Endpoint**     | **Description**                                                              | **Example `curl` Command**                                                                                                                                                                                                                                        |
+|------------------|------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Model Info**   | Return model and all endpoints information                                   | `bash curl --location --request GET '/admin/rest/:model'`                                                                                                                                                                                                         |
+| **Create**       | Create a new resource using the `PUT` method.                                | `bash curl --location --request PUT '/admin/rest/:model' --header 'Content-Type: application/json' --data '{"field1": "field 1 value", "field2": "field 2 value", "field3": 3}'`                                                                                   |
+| **Batch Create** | Create multiple resources using the `PUT` method.                            | `bash curl --location --request PUT '/admin/rest/:model/batch' --header 'Content-Type: application/json' --data '[{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},...]'`    |
+| **List All**     | Retrieve a list of resources with optional filters and pagination.           | `bash curl --location --request GET '/admin/rest/:model/all?field1[contains]=value'`                                                                                                                                                                               |
+| **Paginate**     | Retrieve a paginated list of resources with optional filters.                | `bash curl --location --request GET '/admin/rest/:model/paginate?field1[contains]=value&page=2&size=20'`                                                                                                                                                           |
+| **Retrieve**     | Retrieve a specific resource by ID.                                          | `bash curl --location --request GET '/admin/rest/:model/{id}'`                                                                                                                                                                                                     |
+| **Update**       | Update an existing resource by ID using the `PATCH` method.                  | `bash curl --location --request PATCH '/admin/rest/:model/{id}' --header 'Content-Type: application/json' --data '{"field1": "updated value"}'`                                                                                                                     |
+| **Batch Update** | Update multiple resources based on conditions using the `PATCH` method.      | `bash curl --location --request PATCH '/admin/rest/:model/batch?field1[gte]=value' --header 'Content-Type: application/json' --data '{"field2": "updated value"}'`                                                                                                 |
+| **Delete**       | Delete a specific resource by ID.                                            | `bash curl --location --request DELETE '/admin/rest/:model/{id}'`                                                                                                                                                                                                  |
+| **Batch Delete** | Delete multiple resources based on conditions.                               | `bash curl --location --request DELETE '/admin/rest/:model/batch?field1[eq]=value&field2[isnull]'`                                                                                                                                                                 |
+
+#### Query Parameters Explanation
+
+The query parameters in the URL can be used to filter and manipulate the database query. The format `field1[operator]=value` allows you to compare a database field using the specified operator. Multiple query parameters can be mixed to refine your search.
+
+| **Operator**  | **Description**                            | **Example**                       |
+|---------------|--------------------------------------------|-----------------------------------|
+| `eq`          | Equals (`=`)                               | `field1[eq]=value`                |
+| `neq`         | Not equal (`!=`)                           | `field1[neq]=value`               |
+| `gt`          | Greater than (`>`)                         | `field1[gt]=value`                |
+| `lt`          | Less than (`<`)                            | `field1[lt]=value`                |
+| `gte`         | Greater than or equal to (`>=`)            | `field1[gte]=value`               |
+| `lte`         | Less than or equal to (`<=`)               | `field1[lte]=value`               |
+| `in`          | In list (`IN`)                             | `field1[in]=value1,value2,value3` |
+| `contains`    | Contains (`LIKE`)                          | `field1[contains]=partial_value`  |
+| `isnull`      | Is null (`IS NULL`)                        | `field1[isnull]=1`                |
+| `notnull`     | Is not null (`IS NOT NULL`)                | `field1[notnull]=1`               |
+
+For the pagination API, you can identify the page number using `page=n` and set the result size using `size=m`.
+
+#### Loading Associations
+
+For `all`, `pagination`, and `retrieve` endpoints, it is possible to load associations. Assuming this is our model:
+
+```golang
+type User struct {
+   UserID   int    `gorm:"primaryKey;autoIncrement"`
+   UserName string `gorm:"column:username;index;size:255"`
+   Name     string `gorm:"column:name;size:255"`
+   Orders   []Order
+   restify.API  
+}
+
+type Order struct{
+   OrderID   int    `gorm:"primaryKey;autoIncrement"`
+   UserID    int    `gorm:"fk;users"`
+   Title     string
+   Price     int
+   ProductID int    `gorm:"fk:product_id"`
+   Product   Product
+}
+
+type Product struct{
+   ProductID int    `gorm:"primaryKey;autoIncrement"`
+   Title     string
+   Price     int
+}
+```
+- To load `Orders` association:
+    ```bash
+    curl --location --request GET '/rest/api/users/:id?associations=Orders'
+    ```
+
+- To load an association of an association (`Orders.Product`):
+    ```bash
+    curl --location --request GET '/rest/api/users/:id?associations=Orders.Product'
+    ```
+
+- To load all associations:
+    ```bash
+    curl --location --request GET '/rest/api/users/:id?associations=*'
+    ```
+
+#### Additional Notes
+
+- **Composite Primary Key:** In case the model has a composite primary key, the URL will become: `/admin/rest/{key1}/{key2}/...`
+
+- **Batch Update Return:** In case of a batch update, if `"return=1"` is added to the query string, it will return all affected rows.
+
+- **Model Name:** The `{model}` variable is equal to the table name of the model.
+
+- **Model Information:** Using `GET /admin/rest/models`, it is possible to get information about all available models.
+
+
+
 ### Customization
 
 #### Hooks
@@ -131,5 +222,18 @@ type User struct {
     Name     string `gorm:"column:name;size:255" validation:"alpha,required"`          // name will be required and can contain only alpha characters
     restify.API     // this signature will enable Restify
     restify.DisableDelete // disable delete APIs
+}
+```
+
+
+### Base Path
+
+The Restify API base path is set to `"/admin/restify"` by default. However, you can modify this path before calling `WhenReady` by using the `restify.SetPrefix` method.
+
+#### Example
+
+```golang
+func (App) Register() {
+    restify.SetPrefix("/api/rest") // all Restify endpoints will start with /api/rest
 }
 ```
