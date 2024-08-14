@@ -1,6 +1,6 @@
 # Restify
 
-Restify is an application built for the [Evo Framework](https://github.com/getevo/evo) that allows you to generate RESTful APIs on the fly without the need to write any code. These APIs can be used for various purposes, including data management, data entry processes, dashboards, or communication with third-party applications.
+Restify is an application built for the [EVO Framework](https://github.com/getevo/evo) that allows you to generate RESTful APIs on the fly without the need to write any code. These APIs can be used for various purposes, including data management, data entry processes, dashboards, or communication with third-party applications.
 
 ## Features
 
@@ -16,12 +16,12 @@ Restify is an application built for the [Evo Framework](https://github.com/getev
 
 Before you begin, ensure you have the following installed:
 
-- Evo Framework: [Installation Guide](https://github.com/getevo/evo)
+- EVO Framework: [Installation Guide](https://github.com/getevo/evo)
 - Golang (version 1.22 or higher)
 
 ### Usage
 
-1. Import Restify into your Evo application:
+1. Import Restify into your EVO application:
 
     ```golang
     import (
@@ -74,7 +74,7 @@ Using hooks, you can modify the data before or after database actions. It is als
 | `OnAfterUpdate`    | Runs after updating an object                                   | No                |
 | `OnAfterGet`       | Runs after loading an object from the database                  | Yes (for batch update with `return=1` option) |
 
-#### Example
+##### Example
 
 Here’s an example of how to use hooks in your model:
 
@@ -89,5 +89,47 @@ func (user *User) OnBeforeUpdate(context *restify.Context) error {
         return fmt.Errorf("invalid name")
     }
     return nil
+}
+```
+
+
+#### Validation
+
+Using validation tags, you can automatically validate your data before submitting it to the database. This feature leverages the `"github.com/getevo/evo/v2/lib/validation"` library. For more detailed information, please refer to the [validation documentation](https://github.com/getevo/evo/blob/master/docs/validation.md).
+
+##### Example
+
+```golang
+type User struct {
+    UserID   int    `gorm:"primaryKey;autoIncrement"`
+    UserName string `gorm:"column:username;index;size:255" validation:"required"`      // username will be required
+    Name     string `gorm:"column:name;size:255" validation:"alpha,required"`          // name will be required and can contain only alpha characters
+    restify.API     // this signature will enable Restify
+}
+```
+
+
+
+#### Features
+
+You may turn on or off some Restify endpoints. The following table outlines the available options:
+
+| **Feature**                  | **Description**                                  |
+|------------------------------|--------------------------------------------------|
+| `restify.API`                | Enable Restify Endpoint API                      |
+| `restify.DisableCreate`      | Disable create and batch create endpoints        |
+| `restify.DisableUpdate`      | Disable update and batch update endpoints        |
+| `restify.DisableList`        | Disable data listing API endpoints               |
+| `restify.DisableDelete`      | Disable single and batch delete endpoints        |
+
+##### Example
+
+```golang
+type User struct {
+    UserID   int    `gorm:"primaryKey;autoIncrement"`
+    UserName string `gorm:"column:username;index;size:255" validation:"required"`      // username will be required
+    Name     string `gorm:"column:name;size:255" validation:"alpha,required"`          // name will be required and can contain only alpha characters
+    restify.API     // this signature will enable Restify
+    restify.DisableDelete // disable delete APIs
 }
 ```
