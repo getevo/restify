@@ -135,6 +135,33 @@ type Product struct{
     curl --location --request GET '/rest/api/users/:id?associations=*'
     ```
 
+#### Order
+
+You may order the "all" and "pagination" responses by passing `order=field.asc|desc` in the query string.
+
+**Example:**
+
+```bash
+curl --location --request GET '/admin/rest/:model/all?order=username.asc'
+```
+This example retrieves all records from the model and orders them by the UserName field in ascending order.
+
+#### Offset and Limit
+You may set a data offset and limit for the "all" API by passing offset=n and limit=m in the query string.
+```bash
+curl --location --request GET '/admin/rest/:model/all?offset=10&limit=20'
+```
+This example retrieves records starting from the 10th record and limits the response to 20 records.
+
+
+#### Select Specific Fields
+It is possible to select specific fields in the "all" and "pagination" APIs by passing a list of comma-separated fields like `fields=field1,field2`.
+```bash
+curl --location --request GET '/admin/rest/:model/all?fields=username,name'
+```
+This example retrieves only the username and name fields from all records in the model.
+
+
 #### Additional Notes
 
 - **Composite Primary Key:** In case the model has a composite primary key, the URL will become: `/admin/rest/{key1}/{key2}/...`
@@ -236,3 +263,9 @@ func (App) Register() {
     restify.SetPrefix("/api/rest") // all Restify endpoints will start with /api/rest
 }
 ```
+
+
+-order
+-join
+-offset
+-limit

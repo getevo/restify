@@ -1,14 +1,13 @@
 package restify
 
 import (
-	"github.com/getevo/evo/v2/lib/errors"
 	"gorm.io/gorm/clause"
 )
 
 type Handler struct {
 }
 
-func (Handler) ModelInfo(context *Context) *errors.HTTPError {
+func (Handler) ModelInfo(context *Context) *Error {
 	if !context.HasPermission("VIEW") {
 		return &ErrorPermissionDenied
 	}
@@ -41,7 +40,7 @@ func (Handler) ModelInfo(context *Context) *errors.HTTPError {
 // If the object implements the OnAfterCreate method, it is called OnAfter the creation.
 // The created object is set as the data in the context's Response field.
 // Returns an error if any error occurs during the creation process.
-func (Handler) Create(context *Context) *errors.HTTPError {
+func (Handler) Create(context *Context) *Error {
 	if !context.HasPermission("CREATE") {
 		return &ErrorPermissionDenied
 	}
@@ -83,7 +82,7 @@ func (Handler) Create(context *Context) *errors.HTTPError {
 	return nil
 }
 
-func (Handler) BatchCreate(context *Context) *errors.HTTPError {
+func (Handler) BatchCreate(context *Context) *Error {
 	if !context.HasPermission("CREATE") {
 		return &ErrorPermissionDenied
 	}
@@ -137,7 +136,7 @@ func (Handler) BatchCreate(context *Context) *errors.HTTPError {
 // if they are implemented by the object to perform any necessary operations
 // OnBefore and OnAfter the update. Finally, it sets the updated object as the response
 // data in the context.
-func (Handler) Update(context *Context) *errors.HTTPError {
+func (Handler) Update(context *Context) *Error {
 	if !context.HasPermission("UPDATE") {
 		return &ErrorPermissionDenied
 	}
@@ -187,7 +186,7 @@ func (Handler) Update(context *Context) *errors.HTTPError {
 	return nil
 }
 
-func (Handler) BatchUpdate(context *Context) *errors.HTTPError {
+func (Handler) BatchUpdate(context *Context) *Error {
 	if !context.HasPermission("UPDATE") {
 		return &ErrorPermissionDenied
 	}
@@ -196,7 +195,7 @@ func (Handler) BatchUpdate(context *Context) *errors.HTTPError {
 	ptr := object.Addr().Interface()
 
 	var query = context.GetDBO().Model(ptr)
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
 		return httpErr
@@ -204,6 +203,12 @@ func (Handler) BatchUpdate(context *Context) *errors.HTTPError {
 	err := context.Request.BodyParser(ptr)
 	if err != nil {
 		return context.Error(err, 500)
+	}
+	if context.Request.Query("unsafe").String() == "" {
+		stmt := query.Statement
+		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
+			return &ErrorUnsafe
+		}
 	}
 	query.Debug().Omit(clause.Associations).Updates(ptr)
 	if context.Request.Query("return").String() != "" {
@@ -235,7 +240,7 @@ func (Handler) BatchUpdate(context *Context) *errors.HTTPError {
 // Delete deletes an object from the database.
 // It takes a Context pointer as a parameter.
 // It returns an error if an error occurs during the deletion process.
-func (Handler) Delete(context *Context) *errors.HTTPError {
+func (Handler) Delete(context *Context) *Error {
 	if !context.HasPermission("DELETE") {
 		return &ErrorPermissionDenied
 	}
@@ -279,7 +284,7 @@ func (Handler) Delete(context *Context) *errors.HTTPError {
 // All queries the database and retrieves all objects based on the given context.
 // It applies filters, handles OnBefore and OnAfter events, and sets the response.
 // It returns an error if any occurred during the process.
-func (Handler) All(context *Context) *errors.HTTPError {
+func (Handler) All(context *Context) *Error {
 	if !context.HasPermission("VIEW") {
 		return &ErrorPermissionDenied
 	}
@@ -293,7 +298,7 @@ func (Handler) All(context *Context) *errors.HTTPError {
 		}
 	}
 
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	dbo, httpErr = context.ApplyFilters(dbo)
 	if httpErr != nil {
 		return httpErr
@@ -321,7 +326,7 @@ func (Handler) All(context *Context) *errors.HTTPError {
 
 // Paginate applies pagination to a database query based on the context provided.
 // It modifies the context's response object with the paginated data.
-func (Handler) Paginate(context *Context) *errors.HTTPError {
+func (Handler) Paginate(context *Context) *Error {
 	if !context.HasPermission("VIEW") {
 		return &ErrorPermissionDenied
 	}
@@ -342,7 +347,7 @@ func (Handler) Paginate(context *Context) *errors.HTTPError {
 	context.Response.Page = p.Page
 
 	var query = context.GetDBO().Model(ptr)
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
 		return httpErr
@@ -373,7 +378,7 @@ func (Handler) Paginate(context *Context) *errors.HTTPError {
 // It finds the object by its primary key, sets it as the response data in the context, and returns nil if successful.
 // If the object does not exist, it returns an error of type ErrorObjectNotExist.
 // It returns an error if any operation fails.
-func (Handler) Get(context *Context) *errors.HTTPError {
+func (Handler) Get(context *Context) *Error {
 	if !context.HasPermission("VIEW") {
 		return &ErrorPermissionDenied
 	}
@@ -403,7 +408,7 @@ func (Handler) Get(context *Context) *errors.HTTPError {
 }
 
 // BatchDelete delete multiple objects in the database
-func (h Handler) BatchDelete(context *Context) *errors.HTTPError {
+func (h Handler) BatchDelete(context *Context) *Error {
 	if !context.HasPermission("DELETE") {
 		return &ErrorPermissionDenied
 	}
@@ -412,12 +417,49 @@ func (h Handler) BatchDelete(context *Context) *errors.HTTPError {
 	ptr := object.Addr().Interface()
 
 	var query = context.GetDBO().Model(ptr)
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
 		return httpErr
 	}
+
+	if context.Request.Query("unsafe").String() == "" {
+		stmt := query.Statement
+		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
+			return &ErrorUnsafe
+		}
+	}
+
 	query.Debug().Omit(clause.Associations).Delete(ptr)
 
+	return nil
+}
+
+// Set updates the collection by creating new items that don't already exist
+// and removing any items that are not present in the provided list.
+func (h Handler) Set(context *Context) *Error {
+	if !context.HasPermission("SET") {
+		return &ErrorPermissionDenied
+	}
+
+	object := context.CreateIndirectSlice()
+	ptr := object.Addr().Interface()
+
+	var query = context.GetDBO().Model(ptr)
+	var httpErr *Error
+	query, httpErr = context.ApplyFilters(query)
+	if httpErr != nil {
+		return httpErr
+	}
+
+	if context.Request.Query("unsafe").String() == "" {
+		stmt := query.Statement
+		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
+			return &ErrorUnsafe
+		}
+	}
+
+	query.Debug().Omit(clause.Associations).Unscoped().Delete(ptr)
+	context.GetDBO().Create(ptr)
 	return nil
 }

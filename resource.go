@@ -3,7 +3,6 @@ package restify
 import (
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/db"
-	"github.com/getevo/evo/v2/lib/errors"
 	"github.com/getevo/evo/v2/lib/text"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/iancoleman/strcase"
@@ -73,16 +72,16 @@ func (res *Resource) SetAction(action *Endpoint) {
 }
 
 type Endpoint struct {
-	Name        string                                   `json:"name"`
-	Label       string                                   `json:"-"`
-	Method      Method                                   `json:"method"`
-	URL         string                                   `json:"-"`
-	PKUrl       bool                                     `json:"pk_url"`
-	AbsoluteURI string                                   `json:"url"`
-	Description string                                   `json:"description"`
-	Handler     func(context *Context) *errors.HTTPError `json:"-"`
-	Resource    *Resource                                `json:"-"`
-	URLParams   []Filter                                 `json:"-"`
+	Name        string                        `json:"name"`
+	Label       string                        `json:"-"`
+	Method      Method                        `json:"method"`
+	URL         string                        `json:"-"`
+	PKUrl       bool                          `json:"pk_url"`
+	AbsoluteURI string                        `json:"url"`
+	Description string                        `json:"description"`
+	Handler     func(context *Context) *Error `json:"-"`
+	Resource    *Resource                     `json:"-"`
+	URLParams   []Filter                      `json:"-"`
 }
 
 // Filter represents a filter for data retrieval.
@@ -222,11 +221,11 @@ func (context *Context) SetResponse(response interface{}) {
 
 // HandleError is a method of the Context type that sets the error message in the Response field and marks the Response as unsuccessful.
 // It takes an error parameter.
-func (context *Context) HandleError(error *errors.HTTPError) {
-	if error != nil && len(error.Errors) > 0 {
-		context.Response.Error = error.Errors[0]
+func (context *Context) HandleError(error *Error) {
+	if error != nil {
+		context.Response.Error = error.Message
 		context.Response.Success = false
-		context.Code = error.StatusCode
+		context.Code = error.Code
 	}
 
 }
@@ -235,10 +234,10 @@ func (context *Context) HasPermission(s string) bool {
 	return true
 }
 
-func (context *Context) Error(err error, code int) *errors.HTTPError {
-	return &errors.HTTPError{
-		StatusCode: code,
-		Errors:     []string{err.Error()},
+func (context *Context) Error(err error, code int) *Error {
+	return &Error{
+		Code:    code,
+		Message: err.Error(),
 	}
 }
 
@@ -281,7 +280,7 @@ type Info struct {
 
 // FindByPrimaryKey is a method that searches for a record in the database based on the primary key values provided.
 // The method takes an input parameter, which can be a struct or a
-func (context *Context) FindByPrimaryKey(input interface{}) (bool, *errors.HTTPError) {
+func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	var dbo = context.GetDBO().Debug()
 	var association = context.Request.Query("associations").String()
 	if association != "" {
@@ -317,7 +316,7 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *errors.HTTPE
 			dbo = dbo.Preload(relations)
 		}
 	}
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	dbo, httpErr = filterMapper(context.Request.QueryString(), context, dbo)
 	return dbo.Where(strings.Join(where, " AND "), params...).Take(input).RowsAffected != 0, httpErr
 }

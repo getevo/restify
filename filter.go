@@ -2,7 +2,6 @@ package restify
 
 import (
 	"fmt"
-	"github.com/getevo/evo/v2/lib/errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/url"
@@ -71,7 +70,7 @@ func filterRegEx(str string) []map[string]string {
 
 // filterMapper applies filters to the given query based on the provided filter string.
 // It parses the filter
-func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *errors.HTTPError) {
+func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *Error) {
 	fRegEx := filterRegEx(filters)
 	for _, filter := range fRegEx {
 		var obj = context.CreateIndirectObject().Interface()
@@ -113,7 +112,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 				if v, ok := filterConditions[filter["condition"]]; ok {
 					query = query.Where(fmt.Sprintf("`%s` %s ?", filter["column"], v), filter["value"])
 				} else {
-					var err = errors.New(fmt.Errorf("invalid filter condition %s", filter["condition"]))
+					var err = NewError(fmt.Sprintf("invalid filter condition %s", filter["condition"]), 500)
 					return query, &err
 				}
 
@@ -125,15 +124,13 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 }
 
 // ApplyFilters applies filters to the query based on the request parameters in the context. It modifies the
-func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *errors.HTTPError) {
-
+func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	var association = context.Request.Query("associations").String()
 	if association != "" {
-		if association == "1" || association == "true" {
+		if association == "1" || association == "true" || association == "*" {
 			query = query.Preload(clause.Associations)
 		} else if association == "deep" {
 			var preload = getAssociations("", context.Schema)
-			fmt.Println(context.Schema.Name, preload)
 			for _, item := range preload {
 				query = query.Preload(item)
 			}
@@ -172,7 +169,7 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *errors.HTTPErro
 			query = query.Preload(relations)
 		}
 	}
-	var httpErr *errors.HTTPError
+	var httpErr *Error
 	query, httpErr = filterMapper(context.Request.QueryString(), context, query)
 
 	var offset = context.Request.Query("offset").Int()
