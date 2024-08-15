@@ -263,9 +263,3 @@ func (App) Register() {
     restify.SetPrefix("/api/rest") // all Restify endpoints will start with /api/rest
 }
 ```
-
-
--order
--join
--offset
--limit
