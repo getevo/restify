@@ -23,7 +23,7 @@ type Method string
 const (
 	MethodGET    Method = "GET"
 	MethodPOST   Method = "POST"
-	MethodPatch  Method = "POST"
+	MethodPatch  Method = "PATCH"
 	MethodPUT    Method = "PUT"
 	MethodDELETE Method = "DELETE"
 )
@@ -158,6 +158,8 @@ func (action *Endpoint) RegisterRouter() {
 		evo.Put(action.AbsoluteURI, action.handler)
 	case MethodDELETE:
 		evo.Delete(action.AbsoluteURI, action.handler)
+	case MethodPatch:
+		evo.Patch(action.AbsoluteURI, action.handler)
 	default:
 		log.Fatalf("invalid method %s for %s@%s", action.Method, action.Name, action.Resource.Name)
 	}

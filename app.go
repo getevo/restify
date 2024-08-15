@@ -5,6 +5,7 @@ import (
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/application"
 	"github.com/getevo/evo/v2/lib/db"
+	"github.com/getevo/evo/v2/lib/db/schema"
 	"math"
 )
 
@@ -25,7 +26,10 @@ func (app App) Router() error {
 }
 
 func (app App) WhenReady() error {
-
+	for idx, _ := range schema.Models {
+		var model = schema.Models[idx]
+		UseModel(model.Sample)
+	}
 	var controller Controller
 	for idx, _ := range resources {
 		for i, _ := range resources[idx].Actions {

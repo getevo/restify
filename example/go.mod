@@ -1,6 +1,6 @@
-module github.com/getevo/restify
+module example
 
-go 1.22
+go 1.22.3
 
 require github.com/getevo/evo/v2 v2.0.0-20240815114325-d1269475d749
 
@@ -11,7 +11,6 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/gofiber/fiber/v2 v2.52.5 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.6 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
@@ -21,6 +20,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/kelindar/binary v1.0.19 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
@@ -43,4 +43,12 @@ require (
 	gorm.io/driver/sqlite v1.5.6 // indirect
 	gorm.io/driver/sqlserver v1.5.3 // indirect
 	gorm.io/gorm v1.25.11 // indirect
+
+)
+
+replace github.com/getevo/restify => ../
+
+require (
+	github.com/getevo/restify v0.0.0-20240812202317-de271ec741d9
+	github.com/gofiber/fiber/v2 v2.52.5
 )

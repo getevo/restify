@@ -1,0 +1,638 @@
+{
+	"info": {
+		"_postman_id": "25313d42-f359-4fbc-a91e-49961dfcc28f",
+		"name": "Example",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32628445"
+	},
+	"item": [
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Model Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/order",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 1,\r\n        \"quantitiy\": 4,\r\n        \"total\": 200\r\n    },\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 2,\r\n        \"quantitiy\": 6,\r\n        \"total\": 180\r\n    },\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 3,\r\n        \"quantitiy\": 6,\r\n        \"total\": 300\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/order/set?order_id[eq]=1&user_id[eq]=1",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"order",
+								"set"
+							],
+							"query": [
+								{
+									"key": "order_id[eq]",
+									"value": "1"
+								},
+								{
+									"key": "user_id[eq]",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/order/all?associations=Product",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"order",
+								"all"
+							],
+							"query": [
+								{
+									"key": "associations",
+									"value": "Product"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/order/all",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"order",
+								"all"
+							]
+						},
+						"description": "This endpoint retrieves all orders.\n\n### Request\n\n- Method: GET\n    \n- URL: {{ base }}/order/all\n    \n\n### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n- { \"data\": \\[\\], \"total\": 0, \"offset\": 0, \"total_pages\": 0, \"current_page\": 0, \"size\": 0, \"success\": true, \"error\": \"\", \"type\": \"\", \"validation_error\": null}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Model Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/product",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"reza\",\r\n    \"name\": \"reza\",\r\n    \"email\": \"reza@hashemi.dev\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/product",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"name\": \"Milk\",\r\n        \"unit_price\": 50\r\n    },\r\n    {\r\n        \"name\": \"Bread\",\r\n        \"unit_price\": 30\r\n    },\r\n    {\r\n        \"name\": \"Eggs\",\r\n        \"unit_price\": 60\r\n    },\r\n    {\r\n        \"name\": \"Butter\",\r\n        \"unit_price\": 80\r\n    },\r\n    {\r\n        \"name\": \"Cheese\",\r\n        \"unit_price\": 120\r\n    },\r\n    {\r\n        \"name\": \"Apples\",\r\n        \"unit_price\": 150\r\n    },\r\n    {\r\n        \"name\": \"Bananas\",\r\n        \"unit_price\": 40\r\n    },\r\n    {\r\n        \"name\": \"Tomatoes\",\r\n        \"unit_price\": 70\r\n    },\r\n    {\r\n        \"name\": \"Chicken Breast\",\r\n        \"unit_price\": 250\r\n    },\r\n    {\r\n        \"name\": \"Rice\",\r\n        \"unit_price\": 90\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/product/batch",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/product/all",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/product/all",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"unit_price\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/product/:product_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								":product_id"
+							],
+							"variable": [
+								{
+									"key": "product_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"unit_price\":100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/product/batch?unit_price[gt]=100",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "unit_price[gt]",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/batch?price[gt]=200",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "price[gt]",
+									"value": "200"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/product/:product_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"product",
+								":product_id"
+							],
+							"variable": [
+								{
+									"key": "product_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Model Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/user",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"reza\",\r\n    \"name\": \"reza\",\r\n    \"email\": \"reza@hashemi.dev\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"username\": \"john_doe\",\r\n        \"name\": \"John Doe\",\r\n        \"email\": \"john.doe@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"jane_smith\",\r\n        \"name\": \"Jane Smith\",\r\n        \"email\": \"jane.smith@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"alex_jones\",\r\n        \"name\": \"Alex Jones\",\r\n        \"email\": \"alex.jones@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"michael_clark\",\r\n        \"name\": \"Michael Clark\",\r\n        \"email\": \"michael.clark@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"emily_davis\",\r\n        \"name\": \"Emily Davis\",\r\n        \"email\": \"emily.davis@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"chris_lee\",\r\n        \"name\": \"Chris Lee\",\r\n        \"email\": \"chris.lee@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"sarah_white\",\r\n        \"name\": \"Sarah White\",\r\n        \"email\": \"sarah.white@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"david_martin\",\r\n        \"name\": \"David Martin\",\r\n        \"email\": \"david.martin@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"laura_johnson\",\r\n        \"name\": \"Laura Johnson\",\r\n        \"email\": \"laura.johnson@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"daniel_brown\",\r\n        \"name\": \"Daniel Brown\",\r\n        \"email\": \"daniel.brown@example.com\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/batch",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/user/all?user_id[eq]=1&associations=Orders,Orders.Product",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"all"
+							],
+							"query": [
+								{
+									"key": "user_id[eq]",
+									"value": "1"
+								},
+								{
+									"key": "associations",
+									"value": "Orders,Orders.Product"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/user/all",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"all"
+							]
+						},
+						"description": "\n### Retrieve All Users\n\nThis endpoint makes an HTTP GET request to retrieve all users.\n\n#### Request\n\nNo request body is required for this request.\n\n#### Response\n\nThe response will be a JSON object containing an array of user objects, each representing a user's details. The JSON schema for the response will be provided to describe the structure of the response data.\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"reza_username\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/:user_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"jane_username\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/batch?email[contains]=jane",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "email[contains]",
+									"value": "jane"
+								}
+							]
+						},
+						"description": "\n### Update User Batch by Email\n\nThis endpoint is used to update user information in batch based on email.\n\n#### Request\n\n- Method: `PATCH`\n- URL: `{{ base }}/user/batch?email[contains]=jane`\n\n##### Request Body\n- Type: JSON\n  - `username`: (string) The new username for the user.\n\n#### Response\n\nThe response for this request is documented as a JSON schema. \n"
+					},
+					"response": []
+				},
+				{
+					"name": "Set",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/set",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"set"
+							]
+						},
+						"description": "\nThis endpoint allows you to set user information by making an HTTP POST request to {{ base }}/user/set. The request should include the necessary payload in the raw request body.\n\n### Request Body\nThe request body should contain the user information in the following format:\n- `key1`: Description of the user information.\n- `key2`: Description of the user information.\n\n### Response\nThe response will include the status of the operation and any relevant information about the user set action.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/batch?name[eq]=reza",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "name[eq]",
+									"value": "reza"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/user/:user_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"user",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
