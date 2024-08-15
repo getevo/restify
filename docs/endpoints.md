@@ -120,3 +120,7 @@ This example retrieves only the username and name fields from all records in the
 - **Model Name:** The `{model}` variable is equal to the table name of the model.
 
 - **Model Information:** Using `GET /admin/rest/models`, it is possible to get information about all available models.
+
+---
+#### Example Postman Collection
+**[Postman Collection](https://github.com/getevo/restify/blob/master/example/example.postman_collection.json)**
