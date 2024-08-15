@@ -442,10 +442,17 @@ func (h Handler) Set(context *Context) *Error {
 		return &ErrorPermissionDenied
 	}
 
-	object := context.CreateIndirectSlice()
-	ptr := object.Addr().Interface()
+	input := context.CreateIndirectSlice()
+	loader := context.CreateIndirectSlice()
+	inputPtr := input.Addr().Interface()
+	loaderPtr := loader.Addr().Interface()
 
-	var query = context.GetDBO().Model(ptr)
+	err := context.Request.BodyParser(inputPtr)
+	if err != nil {
+		return context.Error(err, 400)
+	}
+
+	var query = context.GetDBO().Model(loaderPtr)
 	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
@@ -458,8 +465,88 @@ func (h Handler) Set(context *Context) *Error {
 			return &ErrorUnsafe
 		}
 	}
+	query.Unscoped().Find(loaderPtr)
+	var dbo = context.GetDBO()
 
-	query.Debug().Omit(clause.Associations).Unscoped().Delete(ptr)
-	context.GetDBO().Create(ptr)
+	for j := 0; j < loader.Len(); j++ {
+		loaderItem := loader.Index(j)
+		var exists = false
+		for i := 0; i < input.Len(); i++ {
+			inputItem := input.Index(i)
+			if equal(loaderItem, inputItem) {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			var ptr = loaderItem.Addr().Interface()
+			if obj, ok := ptr.(interface{ OnBeforeDelete(context *Context) error }); ok {
+				if err := obj.OnBeforeDelete(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+			if err := dbo.Debug().Unscoped().Delete(ptr).Error; err != nil {
+				return context.Error(err, 500)
+			}
+
+			if obj, ok := ptr.(interface{ OnAfterDelete(context *Context) error }); ok {
+				if err := obj.OnAfterDelete(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
+		}
+	}
+
+	for i := 0; i < input.Len(); i++ {
+		inputItem := input.Index(i)
+		var exists = false
+		for j := 0; j < loader.Len(); j++ {
+			loaderItem := loader.Index(j)
+			if equal(loaderItem, inputItem) {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			var ptr = inputItem.Addr().Interface()
+			if obj, ok := ptr.(interface{ OnBeforeCreate(context *Context) error }); ok {
+				err := obj.OnBeforeCreate(context)
+				if err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
+			if obj, ok := ptr.(interface{ ValidateCreate(context *Context) error }); ok {
+				if err := obj.ValidateCreate(context); err != nil {
+					return context.Error(err, 412)
+				}
+			}
+
+			dbo.Debug().Create(inputItem.Addr().Interface())
+
+			if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {
+				if err := obj.OnAfterCreate(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+		}
+	}
+
+	if context.Request.Query("return").String() != "" {
+		query.Debug().Unscoped().Find(loaderPtr)
+
+		for i := 0; i < loader.Len(); i++ {
+			var v = loader.Index(i).Addr().Interface()
+			if obj, ok := v.(interface{ OnAfterGet(context *Context) error }); ok {
+				if err := obj.OnAfterGet(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+		}
+		context.Response.Data = loader.Interface()
+		return nil
+	}
+	context.Response.Data = nil
 	return nil
 }

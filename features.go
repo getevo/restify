@@ -7,6 +7,7 @@ type Feature struct {
 	DisableUpdate bool
 	DisableList   bool
 	DisableDelete bool
+	DisableSet    bool
 	API           bool
 }
 
@@ -21,6 +22,9 @@ type DisableList struct{}
 
 // DisableDelete is a flag to disable the deletion of existing objects
 type DisableDelete struct{}
+
+// DisableSet is a flag to disable set endpoint
+type DisableSet struct{}
 
 // API is a flag to enable restful API endpoints.
 type API struct{}

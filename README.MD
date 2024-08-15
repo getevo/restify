@@ -60,18 +60,24 @@ Before you begin, ensure you have the following installed:
 
 After registering a model, Restify will expose several default endpoints. These endpoints support both `application/x-www-form-urlencoded` and `application/json` body content types.
 
-| **Endpoint**     | **Description**                                                         | **Example `curl` Command**                                                                                                                                                                                                                                        |
-|------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Model Info**   | Return model structure and all endpoints information                     | `bash curl --location --request GET '/admin/rest/:model'`                                                                                                                                                                                                         |
-| **Create**       | Create a new resource using the `PUT` method.                           | `bash curl --location --request PUT '/admin/rest/:model' --header 'Content-Type: application/json' --data '{"field1": "field 1 value", "field2": "field 2 value", "field3": 3}'`                                                                                   |
-| **Batch Create** | Create multiple resources using the `PUT` method.                       | `bash curl --location --request PUT '/admin/rest/:model/batch' --header 'Content-Type: application/json' --data '[{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},...]'`    |
-| **List All**     | Retrieve a list of resources with optional filters and pagination.      | `bash curl --location --request GET '/admin/rest/:model/all?field1[contains]=value'`                                                                                                                                                                               |
-| **Paginate**     | Retrieve a paginated list of resources with optional filters.           | `bash curl --location --request GET '/admin/rest/:model/paginate?field1[contains]=value&page=2&size=20'`                                                                                                                                                           |
-| **Retrieve**     | Retrieve a specific resource by ID.                                     | `bash curl --location --request GET '/admin/rest/:model/{id}'`                                                                                                                                                                                                     |
-| **Update**       | Update an existing resource by ID using the `PATCH` method.             | `bash curl --location --request PATCH '/admin/rest/:model/{id}' --header 'Content-Type: application/json' --data '{"field1": "updated value"}'`                                                                                                                     |
-| **Batch Update** | Update multiple resources based on conditions using the `PATCH` method. | `bash curl --location --request PATCH '/admin/rest/:model/batch?field1[gte]=value' --header 'Content-Type: application/json' --data '{"field2": "updated value"}'`                                                                                                 |
-| **Delete**       | Delete a specific resource by ID.                                       | `bash curl --location --request DELETE '/admin/rest/:model/{id}'`                                                                                                                                                                                                  |
-| **Batch Delete** | Delete multiple resources based on conditions.                          | `bash curl --location --request DELETE '/admin/rest/:model/batch?field1[eq]=value&field2[isnull]'`                                                                                                                                                                 |
+| **Endpoint**     | **Description**                                                         | **Example `curl` Command**                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|------------------|-------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Model Info**   | Return model structure and all endpoints information                    | `bash curl --location --request GET '/admin/rest/:model'`                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Create**       | Create a new resource using the `PUT` method.                           | `bash curl --location --request PUT '/admin/rest/:model' --header 'Content-Type: application/json' --data '{"field1": "field 1 value", "field2": "field 2 value", "field3": 3}'`                                                                                                                                                                                                                                                                                                   |
+| **Batch Create** | Create multiple resources using the `PUT` method.                       | `bash curl --location --request PUT '/admin/rest/:model/batch' --header 'Content-Type: application/json' --data '[{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},{"field1": "field 1 value", "field2": "field 2 value", "field3": 3},...]'`                                                                                                                                                                                                                   |
+| **List All**     | Retrieve a list of resources with optional filters and pagination.      | `bash curl --location --request GET '/admin/rest/:model/all?field1[contains]=value'`                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Paginate**     | Retrieve a paginated list of resources with optional filters.           | `bash curl --location --request GET '/admin/rest/:model/paginate?field1[contains]=value&page=2&size=20'`                                                                                                                                                                                                                                                                                                                                                                           |
+| **Retrieve**     | Retrieve a specific resource by ID.                                     | `bash curl --location --request GET '/admin/rest/:model/{id}'`                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Update**       | Update an existing resource by ID using the `PATCH` method.             | `bash curl --location --request PATCH '/admin/rest/:model/{id}' --header 'Content-Type: application/json' --data '{"field1": "updated value"}'`                                                                                                                                                                                                                                                                                                                                    |
+| **Batch Update** | Update multiple resources based on conditions using the `PATCH` method. | `bash curl --location --request PATCH '/admin/rest/:model/batch?field1[gte]=value' --header 'Content-Type: application/json' --data '{"field2": "updated value"}'`                                                                                                                                                                                                                                                                                                                 |
+| **Set**          | The `Set` endpoint compares existing rows in the database with the user input based on given criteria. It automatically removes rows from the database that aren't included in the user's request and creates any missing ones.            | `bash curl --location --request POST '/admin/rest/:model/set?field1[eq]=value' --header 'Content-Type: application/json' --data '[{"field2": "v1"},{"field2": "v2"},...]'`                                                                                                                                      |
+| **Delete**       | Delete a specific resource by ID.                                       | `bash curl --location --request DELETE '/admin/rest/:model/{id}'`                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Batch Delete** | Delete multiple resources based on conditions.                          | `bash curl --location --request DELETE '/admin/rest/:model/batch?field1[eq]=value&field2[isnull]'`                                                                                                                                                                                                                                                                                                                                                                                 |
+
+### Notes
+- By default, if no criteria are given to the `batch delete` and `set` endpoints, they return an `unsafe request` error to prevent unwanted data loss. If you want to bypass this error, you can pass `unsafe=1` in the query string.
+- In case of  `batch update` and `set`, if `"return=1"` is added to the query string, it will return all affected rows.
+
 
 #### Query Parameters Explanation
 
@@ -166,8 +172,6 @@ This example retrieves only the username and name fields from all records in the
 
 - **Composite Primary Key:** In case the model has a composite primary key, the URL will become: `/admin/rest/{key1}/{key2}/...`
 
-- **Batch Update Return:** In case of a batch update, if `"return=1"` is added to the query string, it will return all affected rows.
-
 - **Model Name:** The `{model}` variable is equal to the table name of the model.
 
 - **Model Information:** Using `GET /admin/rest/models`, it is possible to get information about all available models.
@@ -180,16 +184,21 @@ This example retrieves only the username and name fields from all records in the
 
 Using hooks, you can modify the data before or after database actions. It is also possible to validate or interrupt the action before it runs. Below is a list of available hooks and their descriptions:
 
-| **Hook Name**      | **Description**                                                | **Batch Support** |
-|--------------------|----------------------------------------------------------------|-------------------|
-| `OnBeforeCreate`   | Runs before creating an object                                  | No                |
-| `OnBeforeUpdate`   | Runs before updating an object                                  | No                |
-| `OnBeforeDelete`   | Runs before deleting an object                                  | No                |
-| `ValidateCreate`   | Validates before creating an object                             | Yes               |
-| `ValidateUpdate`   | Validates before updating an object                             | No                |
-| `OnAfterCreate`    | Runs after creating an object                                   | No                |
-| `OnAfterUpdate`    | Runs after updating an object                                   | No                |
-| `OnAfterGet`       | Runs after loading an object from the database                  | Yes (for batch update with `return=1` option) |
+| **Hook Name**    | **Description**                                | **Supported Endpoints** |
+|------------------|------------------------------------------------|-------------------------|
+| `OnBeforeCreate` | Runs before creating an object                 | Create/Batch Create/Set |
+| `OnBeforeUpdate` | Runs before updating an object                 | Update                  |
+| `OnBeforeDelete` | Runs before deleting an object                 | Delete/Set              |
+| `ValidateCreate` | Validates before creating an object            | Create/Batch Create     |
+| `ValidateUpdate` | Validates before updating an object            | Update/Batch Update     |
+| `OnAfterCreate`  | Runs after creating an object                  | Create/Set              |
+| `OnAfterUpdate`  | Runs after updating an object                  | Update                  |
+| `OnAfterDelete`  | Runs after deleting an object                  | Delete/Set              |
+| `OnAfterGet`     | Runs after loading an object from the database | All/Paginate/Update/Set |
+
+### Warning
+
+Manipulation of values in `OnBeforeCreate` and `ValidateCreate` could cause the `set` endpoint to break, as Restify may fail to compare user input with the new values set by these hooks.
 
 ##### Example
 
@@ -208,6 +217,8 @@ func (user *User) OnBeforeUpdate(context *restify.Context) error {
     return nil
 }
 ```
+
+
 
 
 #### Validation
@@ -231,13 +242,14 @@ type User struct {
 
 You may turn on or off some Restify endpoints. The following table outlines the available options:
 
-| **Feature**                  | **Description**                                  |
-|------------------------------|--------------------------------------------------|
-| `restify.API`                | Enable Restify Endpoint API                      |
-| `restify.DisableCreate`      | Disable create and batch create endpoints        |
-| `restify.DisableUpdate`      | Disable update and batch update endpoints        |
-| `restify.DisableList`        | Disable data listing API endpoints               |
-| `restify.DisableDelete`      | Disable single and batch delete endpoints        |
+| **Feature**             | **Description**                           |
+|-------------------------|-------------------------------------------|
+| `restify.API`           | Enable Restify Endpoint API               |
+| `restify.DisableCreate` | Disable create and batch create endpoints |
+| `restify.DisableUpdate` | Disable update and batch update endpoints |
+| `restify.DisableSet`    | Disable set endpoint                      |
+| `restify.DisableList`   | Disable data listing API endpoints        |
+| `restify.DisableDelete` | Disable single and batch delete endpoints |
 
 ##### Example
 

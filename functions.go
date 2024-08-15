@@ -1,6 +1,7 @@
 package restify
 
 import (
+	"fmt"
 	"github.com/getevo/evo/v2/lib/db"
 	"path/filepath"
 	"reflect"
@@ -43,6 +44,17 @@ func UseModel(model any) *Resource {
 		Handler:     handler.ModelInfo,
 		Description: "return information of the model",
 	})
+
+	if !features.DisableSet {
+		resource.SetAction(&Endpoint{
+			Name:        "SET",
+			Method:      MethodPOST,
+			URL:         "/set",
+			PKUrl:       false,
+			Handler:     handler.Set,
+			Description: "set objects in database",
+		})
+	}
 
 	if !features.DisableList {
 		resource.SetAction(&Endpoint{
@@ -106,6 +118,7 @@ func UseModel(model any) *Resource {
 		})
 
 	}
+
 	if !features.DisableDelete {
 		resource.SetAction(&Endpoint{
 			Name:        "BATCH.DELETE",
@@ -155,4 +168,58 @@ func GetFeatures(v interface{}) Feature {
 	}
 
 	return features
+}
+
+func equal(val1, val2 reflect.Value) bool {
+
+	// Ensure both values are structs or pointers to structs
+	for val1.Kind() == reflect.Ptr {
+		val1 = val1.Elem()
+	}
+	for val2.Kind() == reflect.Ptr {
+		val2 = val2.Elem()
+	}
+
+	// Both values must be structs
+	if val1.Kind() != reflect.Struct || val2.Kind() != reflect.Struct {
+		return false
+	}
+
+	// Iterate through fields of the first struct
+	for i := 0; i < val1.NumField(); i++ {
+		field1 := val1.Field(i)
+		field2 := val2.Field(i)
+		// Skip zero fields
+		if field2.IsZero() || field1.IsZero() {
+			continue
+		}
+		// Dereference pointers if applicable
+		if field1.Kind() == reflect.Ptr {
+			if field1.IsNil() || field2.IsNil() {
+				if field1.IsNil() != field2.IsNil() {
+					return false
+				}
+				continue // Both are nil, consider them equal
+			}
+			field1 = field1.Elem()
+		}
+		for field2.Kind() == reflect.Ptr {
+			field2 = field2.Elem()
+		}
+		for field1.Kind() == reflect.Ptr {
+			field1 = field1.Elem()
+		}
+		// Skip struct fields
+		if field1.Kind() == reflect.Struct {
+			continue
+		}
+
+		// Compare non-struct fields
+		if fmt.Sprint(field2.Interface()) != fmt.Sprint(field1.Interface()) {
+			return false
+		}
+
+	}
+
+	return true
 }
