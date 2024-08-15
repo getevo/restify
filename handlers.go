@@ -8,7 +8,7 @@ type Handler struct {
 }
 
 func (Handler) ModelInfo(context *Context) *Error {
-	if !context.HasPermission("VIEW") {
+	if !context.RestPermission(PermissionsModelInfo, context.CreateIndirectObject()) {
 		return &ErrorPermissionDenied
 	}
 	var info = Info{
@@ -41,13 +41,14 @@ func (Handler) ModelInfo(context *Context) *Error {
 // The created object is set as the data in the context's Response field.
 // Returns an error if any error occurs during the creation process.
 func (Handler) Create(context *Context) *Error {
-	if !context.HasPermission("CREATE") {
-		return &ErrorPermissionDenied
-	}
+
 	var dbo = context.GetDBO()
 	object := context.CreateIndirectObject()
 	ptr := object.Addr().Interface()
 	err := context.Request.BodyParser(ptr)
+	if !context.RestPermission(PermissionCreate, object) {
+		return &ErrorPermissionDenied
+	}
 	if err != nil {
 		return context.Error(err, 400)
 	}
@@ -69,6 +70,8 @@ func (Handler) Create(context *Context) *Error {
 		return nil
 	}
 
+	context.applyOverrides(object)
+
 	if err := dbo.Omit(clause.Associations).Create(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
@@ -83,7 +86,7 @@ func (Handler) Create(context *Context) *Error {
 }
 
 func (Handler) BatchCreate(context *Context) *Error {
-	if !context.HasPermission("CREATE") {
+	if !context.RestPermission(PermissionBatchCreate, context.CreateIndirectObject()) {
 		return &ErrorPermissionDenied
 	}
 	var dbo = context.GetDBO()
@@ -94,6 +97,7 @@ func (Handler) BatchCreate(context *Context) *Error {
 	if err != nil {
 		return context.Error(err, 400)
 	}
+
 	for i := 0; i < object.Len(); i++ {
 		var v = object.Index(i).Addr().Interface()
 		if obj, ok := v.(interface{ OnBeforeCreate(context *Context) error }); ok {
@@ -110,6 +114,7 @@ func (Handler) BatchCreate(context *Context) *Error {
 		if !context.Validate(v) {
 			return nil
 		}
+		context.applyOverrides(object.Index(i))
 	}
 
 	if err := dbo.Omit(clause.Associations).Create(ptr).Error; err != nil {
@@ -137,11 +142,12 @@ func (Handler) BatchCreate(context *Context) *Error {
 // OnBefore and OnAfter the update. Finally, it sets the updated object as the response
 // data in the context.
 func (Handler) Update(context *Context) *Error {
-	if !context.HasPermission("UPDATE") {
-		return &ErrorPermissionDenied
-	}
+
 	var dbo = context.GetDBO()
 	object := context.CreateIndirectObject()
+	if !context.RestPermission(PermissionUpdate, object) {
+		return &ErrorPermissionDenied
+	}
 	ptr := object.Addr().Interface()
 	key, httpErr := context.FindByPrimaryKey(ptr)
 
@@ -152,6 +158,7 @@ func (Handler) Update(context *Context) *Error {
 		return &ErrorObjectNotExist
 	}
 	err := context.Request.BodyParser(ptr)
+
 	if err != nil {
 		return context.Error(err, 500)
 	}
@@ -170,7 +177,7 @@ func (Handler) Update(context *Context) *Error {
 	if !context.Validate(ptr) {
 		return nil
 	}
-
+	context.applyOverrides(object)
 	//evo.Dump(ptr)
 	if err := dbo.Debug().Omit(clause.Associations).Save(ptr).Error; err != nil {
 		return context.Error(err, 500)
@@ -187,7 +194,7 @@ func (Handler) Update(context *Context) *Error {
 }
 
 func (Handler) BatchUpdate(context *Context) *Error {
-	if !context.HasPermission("UPDATE") {
+	if !context.RestPermission(PermissionBatchUpdate, context.CreateIndirectObject()) {
 		return &ErrorPermissionDenied
 	}
 
@@ -210,7 +217,26 @@ func (Handler) BatchUpdate(context *Context) *Error {
 			return &ErrorUnsafe
 		}
 	}
-	query.Debug().Omit(clause.Associations).Updates(ptr)
+
+	if obj, ok := ptr.(interface{ OnBeforeUpdate(context *Context) error }); ok {
+		if err := obj.OnBeforeUpdate(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
+	if obj, ok := ptr.(interface{ ValidateUpdate(context *Context) error }); ok {
+		if err := obj.ValidateUpdate(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
+	//TODO: validate
+	/*	if !context.Validate(ptr) {
+		return nil
+	}*/
+
+	context.applyOverrides(object)
+	query.Debug().Omit(clause.Associations).Where("1=1").Updates(ptr)
 	if context.Request.Query("return").String() != "" {
 		var slice = context.CreateIndirectSlice()
 		ptr = slice.Addr().Interface()
@@ -241,16 +267,18 @@ func (Handler) BatchUpdate(context *Context) *Error {
 // It takes a Context pointer as a parameter.
 // It returns an error if an error occurs during the deletion process.
 func (Handler) Delete(context *Context) *Error {
-	if !context.HasPermission("DELETE") {
-		return &ErrorPermissionDenied
-	}
+
 	var dbo = context.GetDBO()
 	object := context.CreateIndirectObject()
+	if !context.RestPermission(PermissionDelete, object) {
+		return &ErrorPermissionDenied
+	}
 	ptr := object.Addr().Interface()
 	key, httpErr := context.FindByPrimaryKey(ptr)
 	if httpErr != nil {
 		return httpErr
 	}
+
 	if !key {
 		return &ErrorObjectNotExist
 	}
@@ -285,18 +313,15 @@ func (Handler) Delete(context *Context) *Error {
 // It applies filters, handles OnBefore and OnAfter events, and sets the response.
 // It returns an error if any occurred during the process.
 func (Handler) All(context *Context) *Error {
-	if !context.HasPermission("VIEW") {
+	obj := context.CreateIndirectObject()
+	if !context.RestPermission(PermissionViewAll, obj) {
 		return &ErrorPermissionDenied
 	}
+
 	var dbo = context.GetDBO()
 
 	var slice = context.CreateIndirectSlice()
 	ptr := slice.Addr().Interface()
-	if obj, ok := context.CreateIndirectObject().Addr().Interface().(interface{ OnBeforeGet(context *Context) error }); ok {
-		if err := obj.OnBeforeGet(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
 
 	var httpErr *Error
 	dbo, httpErr = context.ApplyFilters(dbo)
@@ -327,9 +352,11 @@ func (Handler) All(context *Context) *Error {
 // Paginate applies pagination to a database query based on the context provided.
 // It modifies the context's response object with the paginated data.
 func (Handler) Paginate(context *Context) *Error {
-	if !context.HasPermission("VIEW") {
+	obj := context.CreateIndirectObject()
+	if !context.RestPermission(PermissionViewPagination, obj) {
 		return &ErrorPermissionDenied
 	}
+
 	var slice = context.CreateIndirectSlice()
 
 	if obj, ok := context.CreateIndirectObject().Addr().Interface().(interface{ OnBeforeGet(context *Context) error }); ok {
@@ -379,9 +406,17 @@ func (Handler) Paginate(context *Context) *Error {
 // If the object does not exist, it returns an error of type ErrorObjectNotExist.
 // It returns an error if any operation fails.
 func (Handler) Get(context *Context) *Error {
-	if !context.HasPermission("VIEW") {
+	obj := context.CreateIndirectObject()
+	if !context.RestPermission(PermissionViewGet, obj) {
 		return &ErrorPermissionDenied
 	}
+
+	if obj, ok := obj.Addr().Interface().(interface{ OnBeforeGet(context *Context) error }); ok {
+		if err := obj.OnBeforeGet(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
 	object := context.CreateIndirectObject()
 	ptr := object.Addr().Interface()
 	if obj, ok := ptr.(interface{ OnBeforeGet(context *Context) error }); ok {
@@ -409,14 +444,14 @@ func (Handler) Get(context *Context) *Error {
 
 // BatchDelete delete multiple objects in the database
 func (h Handler) BatchDelete(context *Context) *Error {
-	if !context.HasPermission("DELETE") {
-		return &ErrorPermissionDenied
-	}
 
 	object := context.CreateIndirectObject()
 	ptr := object.Addr().Interface()
+	if !context.RestPermission(PermissionBatchDelete, object) {
+		return &ErrorPermissionDenied
+	}
 
-	var query = context.GetDBO().Model(ptr)
+	var query = context.GetDBO().Model(ptr).Debug()
 	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
@@ -438,7 +473,7 @@ func (h Handler) BatchDelete(context *Context) *Error {
 // Set updates the collection by creating new items that don't already exist
 // and removing any items that are not present in the provided list.
 func (h Handler) Set(context *Context) *Error {
-	if !context.HasPermission("SET") {
+	if !context.RestPermission(PermissionSet, context.CreateIndirectObject()) {
 		return &ErrorPermissionDenied
 	}
 
@@ -522,7 +557,7 @@ func (h Handler) Set(context *Context) *Error {
 					return context.Error(err, 412)
 				}
 			}
-
+			context.applyOverrides(inputItem)
 			dbo.Debug().Create(inputItem.Addr().Interface())
 
 			if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {

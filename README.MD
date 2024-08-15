@@ -16,6 +16,8 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
 - **[Getting Started](https://github.com/getevo/restify?tab=readme-ov-file#getting-started)**
 - **[Endpoints](./docs/endpoints.md)**
 - **[Customization](./docs/customization.md)**
+- **[Permissions](./docs/permissions.md)**
+- **[Context](./docs/context.md)**
 - **[Example](./example)**
 
 ---

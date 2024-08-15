@@ -12,6 +12,10 @@ func SetPrefix(prefix string) {
 	Prefix = prefix
 }
 
+func SetDefaultPermissionHandler(handler func(permissions Permissions, context *Context) bool) {
+	permissionHandler = handler
+}
+
 func UseModel(model any) *Resource {
 	var features = GetFeatures(model)
 	ref := reflect.ValueOf(model)

@@ -18,6 +18,9 @@ import (
 // resources is a map that holds a collection of *Resource objects.
 var resources = map[string]*Resource{}
 
+type Permission string
+type Permissions []string
+
 type Method string
 
 const (
@@ -26,6 +29,18 @@ const (
 	MethodPatch  Method = "PATCH"
 	MethodPUT    Method = "PUT"
 	MethodDELETE Method = "DELETE"
+
+	PermissionsModelInfo     Permission = "VIEW+MODEL_INFO"
+	PermissionCreate         Permission = "CREATE"
+	PermissionUpdate         Permission = "UPDATE"
+	PermissionBatchCreate    Permission = "BATCH+CREATE"
+	PermissionBatchUpdate    Permission = "BATCH+UPDATE"
+	PermissionDelete         Permission = "DELETE"
+	PermissionBatchDelete    Permission = "BATCH+DELETE"
+	PermissionViewGet        Permission = "VIEW+GET"
+	PermissionViewAll        Permission = "VIEW+ALL"
+	PermissionViewPagination Permission = "VIEW+PAGINATION"
+	PermissionSet            Permission = "SET"
 )
 
 // Resource represents a resource in an API.
@@ -104,13 +119,21 @@ type Filter struct {
 // It contains information about the request, the object being processed,
 // the sample data, the action to be performed, the response, and the schema.
 type Context struct {
-	Request  *evo.Request
-	Object   reflect.Value
-	Sample   interface{}
-	Action   *Endpoint
-	Response *Pagination
-	Schema   *schema.Schema
-	Code     int
+	Request    *evo.Request
+	Object     reflect.Value
+	Sample     interface{}
+	Action     *Endpoint
+	Response   *Pagination
+	Schema     *schema.Schema
+	Conditions []Condition
+	override   *reflect.Value
+	Code       int
+}
+
+type Condition struct {
+	Field string `json:"field"`
+	Op    string `json:"op"`
+	Value any    `json:"value"`
 }
 
 // handler handles the incoming request and returns a response.
@@ -232,7 +255,18 @@ func (context *Context) HandleError(error *Error) {
 
 }
 
-func (context *Context) HasPermission(s string) bool {
+func (context *Context) RestPermission(permission Permission, object reflect.Value) bool {
+	var ptr = object.Addr().Interface()
+	if obj, ok := ptr.(interface {
+		RestPermission(permission Permissions, context *Context) bool
+	}); ok {
+		return obj.RestPermission(permission.ToPermissions(), context)
+	}
+
+	if permissionHandler != nil {
+		return permissionHandler(permission.ToPermissions(), context)
+	}
+
 	return true
 }
 
@@ -320,7 +354,9 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	}
 	var httpErr *Error
 	dbo, httpErr = filterMapper(context.Request.QueryString(), context, dbo)
-	return dbo.Where(strings.Join(where, " AND "), params...).Take(input).RowsAffected != 0, httpErr
+	dbo = dbo.Where(strings.Join(where, " AND "), params...)
+
+	return dbo.Debug().Take(input).RowsAffected != 0, httpErr
 }
 
 func getAssociations(prefix string, s *schema.Schema, loaded ...string) []string {
@@ -388,4 +424,51 @@ func relationsMapper(joins string) string {
 		}
 	}
 	return ""
+}
+
+func (p Permissions) Has(perms ...string) bool {
+	for _, s := range perms {
+		for _, item := range p {
+
+			if strings.ToUpper(string(item)) == strings.ToUpper(s) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (p Permission) ToPermissions() Permissions {
+	var chunks = strings.Split(string(p), "+")
+	return chunks
+}
+
+func (context *Context) SetCondition(condition string, op string, value any) {
+	context.Conditions = append(context.Conditions, Condition{condition, op, value})
+}
+
+func (context *Context) Override(value any) {
+	var ref = reflect.ValueOf(value)
+	for ref.Kind() == reflect.Ptr {
+		ref = ref.Elem()
+	}
+
+	if ref.Kind() != reflect.Struct && ref.Type() != context.Object.Type() {
+		return
+	}
+	context.override = &ref
+}
+
+func (context *Context) applyOverrides(ptr reflect.Value) {
+	if context.override == nil {
+		return
+	}
+
+	for i := 0; i < context.override.NumField(); i++ {
+		field := context.override.Field(i)
+		if !field.IsZero() {
+			ptr.Field(i).Set(field)
+		}
+	}
+
 }

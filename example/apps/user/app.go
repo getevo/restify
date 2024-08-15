@@ -11,8 +11,8 @@ type App struct{}
 
 func (app App) Register() error {
 	restify.SetPrefix("/admin/rest")
-	db.UseModel(User{}, Order{}, Product{})
-	evo.GetDBO().AutoMigrate(User{}, Order{}, Product{})
+	db.UseModel(User{}, Order{}, Product{}, Article{})
+	evo.GetDBO().AutoMigrate(Article{}, User{}, Order{}, Product{})
 	return nil
 }
 

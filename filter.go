@@ -119,6 +119,10 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			}
 		}
 	}
+
+	for _, condition := range context.Conditions {
+		query = query.Where(fmt.Sprintf("`%s` %s ?", condition.Field, condition.Op), condition.Value)
+	}
 	query = query.Debug()
 	return query, nil
 }

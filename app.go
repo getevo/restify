@@ -11,6 +11,8 @@ import (
 
 var Prefix = "/admin/rest"
 
+var permissionHandler func(permissions Permissions, context *Context) bool
+
 type App struct{}
 
 func (app App) Register() error {
