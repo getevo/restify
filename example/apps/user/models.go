@@ -122,6 +122,7 @@ func (article *Article) RestPermission(permissions restify.Permissions, context 
 			UserID: user.UserID,
 		})
 	}
+
 	return true
 }
 
