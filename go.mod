@@ -2,7 +2,7 @@ module github.com/getevo/restify
 
 go 1.22
 
-require github.com/getevo/evo/v2 v2.0.0-20240815114325-d1269475d749
+require github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -10,6 +10,7 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde // indirect
+	github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gofiber/fiber/v2 v2.52.5 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.6 // indirect

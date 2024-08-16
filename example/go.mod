@@ -2,7 +2,7 @@ module example
 
 go 1.22.3
 
-require github.com/getevo/evo/v2 v2.0.0-20240815114325-d1269475d749
+require github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -10,11 +10,11 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde // indirect
+	github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.6 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -51,4 +51,5 @@ replace github.com/getevo/restify => ../
 require (
 	github.com/getevo/restify v0.0.0-20240812202317-de271ec741d9
 	github.com/gofiber/fiber/v2 v2.52.5
+	github.com/google/uuid v1.6.0
 )

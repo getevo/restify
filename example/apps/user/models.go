@@ -18,7 +18,7 @@ type User struct {
 	UserID   int     `gorm:"column:user_id;primaryKey;autoIncrement" json:"id"`
 	UUID     string  `gorm:"column:uuid;index;size:24" json:"UUID"`
 	Username string  `gorm:"column:username;size:255;uniqueIndex" validation:"required" json:"username"`
-	Password string  `gorm:"column:password;size:512;not null;DEFAULT:''" json:"password" `
+	Password string  `gorm:"column:password;size:512;not null;DEFAULT:''" json:"password,omit_encode" `
 	IsAdmin  bool    `gorm:"column:is_admin" json:"is_admin"`
 	Name     string  `gorm:"column:name;size:255" validation:"required,alpha" json:"name"`
 	Email    string  `gorm:"column:email;size:255;uniqueIndex" validation:"required,email" json:"email"`

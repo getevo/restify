@@ -28,6 +28,10 @@ github.com/getevo/evo/v2 v2.0.0-20240730140728-aedac747e457 h1:ZOob0/JgjKb9mp2fC
 github.com/getevo/evo/v2 v2.0.0-20240730140728-aedac747e457/go.mod h1:woPRK7F88lh1rQy5h5LWZ7cppYlA4Y/NIARKT+jh87k=
 github.com/getevo/evo/v2 v2.0.0-20240815114325-d1269475d749 h1:ewORFP7tqvwWqqT9fI8ZNl3v64ODr8JsYgJPv6gku0s=
 github.com/getevo/evo/v2 v2.0.0-20240815114325-d1269475d749/go.mod h1:woPRK7F88lh1rQy5h5LWZ7cppYlA4Y/NIARKT+jh87k=
+github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92 h1:B0LeqvXpWfmZ7sKgD2K9uespbaAzACdvgGq5XIvt4K4=
+github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92/go.mod h1:+dLcGWiqEDKkqvzkkfth4e1qTAhQyP9EQcU4mFdeXV4=
+github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 h1:yPW/dYX0id8nVZ7be3Ku774zGl9hvcrimVBQp2o0poA=
+github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9/go.mod h1:/vW02CjTwXnxp418rxOH+H60g370rfUOFitfnHLy+Po=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-sql-driver/mysql v1.8.1 h1:LedoTUt/eveggdHS9qUFC1EFSa8bU2+1pZjSRpvNJ1Y=
 github.com/go-sql-driver/mysql v1.8.1/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=

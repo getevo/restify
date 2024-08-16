@@ -374,6 +374,9 @@
 				{
 					"name": "Create",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -511,7 +514,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"jane_username\"\r\n}",
+							"raw": "{\r\n    \"password\":\"123456\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -519,7 +522,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/user/batch?email[contains]=jane",
+							"raw": "{{ base }}/user/batch?unsafe=1",
 							"host": [
 								"{{ base }}"
 							],
@@ -529,8 +532,8 @@
 							],
 							"query": [
 								{
-									"key": "email[contains]",
-									"value": "jane"
+									"key": "unsafe",
+									"value": "1"
 								}
 							]
 						},
@@ -600,7 +603,7 @@
 					"response": []
 				},
 				{
-					"name": "Batch Delete",
+					"name": "Delete",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -631,6 +634,332 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Article",
+			"item": [
+				{
+					"name": "Model Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/article",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Create",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"body\": \"test1\"\r\n    },\r\n    {\r\n        \"body\": \"test2\"\r\n    },\r\n    {\r\n        \"body\": \"test3\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/batch",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/article/all?user_id[eq]=1&associations=Orders,Orders.Product",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"all"
+							],
+							"query": [
+								{
+									"key": "user_id[eq]",
+									"value": "1"
+								},
+								{
+									"key": "associations",
+									"value": "Orders,Orders.Product"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ base }}/article/all",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"all"
+							]
+						},
+						"description": "\n### Retrieve All Users\n\nThis endpoint makes an HTTP GET request to retrieve all users.\n\n#### Request\n\nNo request body is required for this request.\n\n#### Response\n\nThe response will be a JSON object containing an array of user objects, each representing a user's details. The JSON schema for the response will be provided to describe the structure of the response data.\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"new body\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/:article_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								":article_id"
+							],
+							"variable": [
+								{
+									"key": "article_id",
+									"value": "15"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\":\"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/batch?unsafe=1",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "unsafe",
+									"value": "1"
+								}
+							]
+						},
+						"description": "\n### Update User Batch by Email\n\nThis endpoint is used to update user information in batch based on email.\n\n#### Request\n\n- Method: `PATCH`\n- URL: `{{ base }}/user/batch?email[contains]=jane`\n\n##### Request Body\n- Type: JSON\n  - `username`: (string) The new username for the user.\n\n#### Response\n\nThe response for this request is documented as a JSON schema. \n"
+					},
+					"response": []
+				},
+				{
+					"name": "Set",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\"body\":\"newbody\"}\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/set?user_id[eq]=88",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"set"
+							],
+							"query": [
+								{
+									"key": "user_id[eq]",
+									"value": "88"
+								}
+							]
+						},
+						"description": "\nThis endpoint allows you to set user information by making an HTTP POST request to {{ base }}/user/set. The request should include the necessary payload in the raw request body.\n\n### Request Body\nThe request body should contain the user information in the following format:\n- `key1`: Description of the user information.\n- `key2`: Description of the user information.\n\n### Response\nThe response will include the status of the operation and any relevant information about the user set action.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Batch Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/batch?user_id[eq]=3",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								"batch"
+							],
+							"query": [
+								{
+									"key": "user_id[eq]",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base }}/article/:article_id",
+							"host": [
+								"{{ base }}"
+							],
+							"path": [
+								"article",
+								":article_id"
+							],
+							"variable": [
+								{
+									"key": "article_id",
+									"value": "38"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "username",
+						"value": "chris_lee",
+						"type": "string"
+					},
+					{
+						"key": "password",
+						"value": "123456",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}
