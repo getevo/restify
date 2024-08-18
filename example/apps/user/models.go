@@ -40,7 +40,6 @@ func (user *User) OnBeforeCreate(context *restify.Context) error {
 }
 
 func (user *User) OnBeforeUpdate(context *restify.Context) error {
-	fmt.Println("here")
 	if user.Password != "" {
 		user.Password = GetMD5Hash(user.Password)
 	}

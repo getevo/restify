@@ -59,7 +59,11 @@ func (Handler) Create(context *Context) *Error {
 			return context.Error(err, 500)
 		}
 	}
-
+	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
+		if err := obj.OnBeforeSave(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
 	if obj, ok := ptr.(interface{ ValidateCreate(context *Context) error }); ok {
 		if err := obj.ValidateCreate(context); err != nil {
 			return context.Error(err, 412)
@@ -78,6 +82,12 @@ func (Handler) Create(context *Context) *Error {
 
 	if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {
 		if err := obj.OnAfterCreate(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
+	if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
+		if err := obj.OnAfterSave(context); err != nil {
 			return context.Error(err, 500)
 		}
 	}
@@ -106,6 +116,11 @@ func (Handler) BatchCreate(context *Context) *Error {
 				return context.Error(err, 500)
 			}
 		}
+		if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
+			if err := obj.OnBeforeSave(context); err != nil {
+				return context.Error(err, 500)
+			}
+		}
 		if obj, ok := v.(interface{ ValidateCreate(context *Context) error }); ok {
 			if err := obj.ValidateCreate(context); err != nil {
 				return context.Error(err, 412)
@@ -125,6 +140,12 @@ func (Handler) BatchCreate(context *Context) *Error {
 		var v = object.Index(i).Addr().Interface()
 		if obj, ok := v.(interface{ OnAfterCreate(context *Context) error }); ok {
 			if err := obj.OnAfterCreate(context); err != nil {
+				return context.Error(err, 500)
+			}
+		}
+
+		if obj, ok := v.(interface{ OnAfterSave(context *Context) error }); ok {
+			if err := obj.OnAfterSave(context); err != nil {
 				return context.Error(err, 500)
 			}
 		}
@@ -168,6 +189,12 @@ func (Handler) Update(context *Context) *Error {
 		}
 	}
 
+	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
+		if err := obj.OnBeforeSave(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
 	if obj, ok := ptr.(interface{ ValidateUpdate(context *Context) error }); ok {
 		if err := obj.ValidateUpdate(context); err != nil {
 			return context.Error(err, 500)
@@ -185,6 +212,11 @@ func (Handler) Update(context *Context) *Error {
 
 	if obj, ok := ptr.(interface{ OnAfterUpdate(context *Context) error }); ok {
 		if err := obj.OnAfterUpdate(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+	if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
+		if err := obj.OnAfterSave(context); err != nil {
 			return context.Error(err, 500)
 		}
 	}
@@ -224,6 +256,12 @@ func (Handler) BatchUpdate(context *Context) *Error {
 		}
 	}
 
+	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
+		if err := obj.OnBeforeSave(context); err != nil {
+			return context.Error(err, 500)
+		}
+	}
+
 	if obj, ok := ptr.(interface{ ValidateUpdate(context *Context) error }); ok {
 		if err := obj.ValidateUpdate(context); err != nil {
 			return context.Error(err, 500)
@@ -246,6 +284,12 @@ func (Handler) BatchUpdate(context *Context) *Error {
 			var v = slice.Index(i).Addr().Interface()
 			if obj, ok := v.(interface{ OnAfterUpdate(context *Context) error }); ok {
 				if err := obj.OnAfterUpdate(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
+			if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
+				if err := obj.OnAfterSave(context); err != nil {
 					return context.Error(err, 500)
 				}
 			}
@@ -552,6 +596,12 @@ func (h Handler) Set(context *Context) *Error {
 				}
 			}
 
+			if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
+				if err := obj.OnBeforeSave(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
 			if obj, ok := ptr.(interface{ ValidateCreate(context *Context) error }); ok {
 				if err := obj.ValidateCreate(context); err != nil {
 					return context.Error(err, 412)
@@ -562,6 +612,12 @@ func (h Handler) Set(context *Context) *Error {
 
 			if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {
 				if err := obj.OnAfterCreate(context); err != nil {
+					return context.Error(err, 500)
+				}
+			}
+
+			if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
+				if err := obj.OnAfterSave(context); err != nil {
 					return context.Error(err, 500)
 				}
 			}
