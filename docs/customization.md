@@ -3,18 +3,20 @@
 
 Using hooks, you can modify the data before or after database actions. It is also possible to validate or interrupt the action before it runs. Below is a list of available hooks and their descriptions:
 
-| **Hook Name**     | **Description**                                | **Supported Endpoints** |
-|-------------------|------------------------------------------------|-------------------------|
-| `OnBeforeCreate`  | Runs before creating an object                 | Create/Batch Create/Set |
-| `OnBeforeUpdate`  | Runs before updating an object                 | Update                  |
-| `OnBeforeDelete`  | Runs before deleting an object                 | Delete/Set              |
-| `ValidateCreate`  | Validates before creating an object            | Create/Batch Create     |
-| `ValidateUpdate`  | Validates before updating an object            | Update/Batch Update     |
-| `OnAfterCreate`   | Runs after creating an object                  | Create/Set              |
-| `OnAfterUpdate`   | Runs after updating an object                  | Update                  |
-| `OnAfterDelete`   | Runs after deleting an object                  | Delete/Set              |
-| `OnAfterGet`      | Runs after loading an object from the database | All/Paginate/Update/Set |
-| `RestPermissions` | Check if request is eligible to be processed   | Every endpoint          |
+| **Hook Name**     | **Description**                                | **Supported Endpoints**                     |
+|-------------------|------------------------------------------------|---------------------------------------------|
+| `OnBeforeCreate`  | Runs before creating an object                 | Create/Batch Create/Set                     |
+| `OnBeforeUpdate`  | Runs before updating an object                 | Update                                      |
+| `OnBeforeSave`    | Runs before create/edit object                 | Create/Update/Set/Batch Create/Batch Update |
+| `OnBeforeDelete`  | Runs before deleting an object                 | Delete/Set                                  |
+| `ValidateCreate`  | Validates before creating an object            | Create/Batch Create                         |
+| `ValidateUpdate`  | Validates before updating an object            | Update/Batch Update                         |
+| `OnAfterCreate`   | Runs after creating an object                  | Create/Set                                  |
+| `OnAfterUpdate`   | Runs after updating an object                  | Update                                      |
+| `OnAfterSave`     | Runs after create/edit object                  | Create/Update/Set/Batch Create/Batch Update |
+| `OnAfterDelete`   | Runs after deleting an object                  | Delete/Set                                  |
+| `OnAfterGet`      | Runs after loading an object from the database | All/Paginate/Update/Set                     |
+| `RestPermissions` | Check if request is eligible to be processed   | Every endpoint                              |
 
 ### Warning
 
