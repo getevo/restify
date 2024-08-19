@@ -20,7 +20,7 @@ Using hooks, you can modify the data before or after database actions. It is als
 
 ### Warning
 
-Manipulation of values in `OnBeforeCreate` and `ValidateCreate` could cause the `set` endpoint to break, as Restify may fail to compare user input with the new values set by these hooks.
+Manipulation of values in `OnBeforeCreate`, `ValidateCreate` and `OnBeforeSave` could cause the `Set` endpoint to break, as Restify may fail to compare user input with the new values set by these hooks.
 
 ##### Example
 

@@ -2,7 +2,7 @@
 
 Context helps developers take control over the actions of Restify endpoints by providing mechanisms to enforce conditions and override data before it is submitted to the database.
 
-### Conditions
+### Forced Conditions
 
 Conditions allow you to append custom conditions to `select`, `update`, and `delete` queries, forcing specific criteria to be met.
 
@@ -11,12 +11,12 @@ Conditions allow you to append custom conditions to `select`, `update`, and `del
 The `Override` function lets you modify data before it is submitted to the database, ensuring that certain fields or values are set according to your application's logic.
 
 
-### Error
+### Error Handling
 
 The `Error` function lets you throw an error as endpoint response.
 
 
-### Example Usage
+### Example
 
 Here’s an example of how to use `RestPermission` to manage permissions, conditions, and overrides:
 

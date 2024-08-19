@@ -15,9 +15,26 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
 ## Table of contents
 - **[Getting Started](https://github.com/getevo/restify?tab=readme-ov-file#getting-started)**
 - **[Endpoints](./docs/endpoints.md)**
+  - [Endpoints](./docs/endpoints.md#endpoints)
+  - [Query Parameters Explanation](./docs/endpoints.md#query-parameters-explanation)
+  - [Loading Associations](./docs/endpoints.md#loading-associations)
+  - [Offset and Limit](./docs/endpoints.md#offset-and-limit)
+  - [Select Specific Fields](./docs/endpoints.md#select-specific-fields)
+  - [Example Postman Collection](./docs/endpoints.md#example-postman-collection)
 - **[Customization](./docs/customization.md)**
+  - [Hooks](./docs/customization.md#hooks)
+  - [Validation](./docs/customization.md#validation)
+  - [Features](./docs/customization.md#features)
+  - [Base Path](./docs/customization.md#base-path)
+  - [Soft Delete](./docs/customization.md#soft-delete)
 - **[Permissions](./docs/permissions.md)**
+  - [Default Permission Handler](./docs/permissions.md#default-permission-handler)
+  - [Model Rest Permission Handler](./docs/permissions.md#model-rest-permission-handler)
+  - [Using `permissions.Has`](./docs/permissions.md#using-permissionshas)
 - **[Context](./docs/context.md)**
+  - [Forced Conditions](./docs/context.md#forced-conditions)
+  - [Override](./docs/context.md#override)
+  - [Error Handling](./docs/context.md#error-handling)
 - **[Example](./example)**
 
 ---
