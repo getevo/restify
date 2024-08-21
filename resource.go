@@ -1,9 +1,11 @@
 package restify
 
 import (
+	"fmt"
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/db"
 	"github.com/getevo/evo/v2/lib/text"
+	"github.com/getevo/postman"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/iancoleman/strcase"
 	"golang.org/x/text/cases"
@@ -12,6 +14,7 @@ import (
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -57,6 +60,7 @@ type Resource struct {
 	Path                string         `json:"path"`
 	Name                string         `json:"model"`
 	Feature             Feature        `json:"feature"`
+	PostmanGroup        *postman.Item  `json:"-"`
 }
 
 func (res *Resource) SetAction(action *Endpoint) {
@@ -84,19 +88,72 @@ func (res *Resource) SetAction(action *Endpoint) {
 	action.Resource = res
 
 	res.Actions = append(res.Actions, action)
+
+	req := postman.Request{
+		Url: &postman.Url{
+			Raw: "{{ base_url }}" + action.AbsoluteURI,
+			Host: []string{
+				"{{ base_url }}",
+			},
+			Path: []string{
+				action.AbsoluteURI,
+			},
+		},
+		Method:      string(action.Method),
+		Description: action.GenerateDescription(),
+		Body: &postman.Body{
+			Mode: postman.BodyModeRaw,
+			Raw:  "",
+		},
+	}
+	for key, value := range postmanHeaders {
+		req.Header = append(req.Header, postman.Header{Key: key, Value: value})
+	}
+	req.Body.SetLanguage("json")
+	if action.AcceptData {
+
+		if action.Batch {
+			var data []any
+			for i := 0; i < 3; i++ {
+				data = append(data, ModelDataFaker(res.Schema))
+			}
+			req.Body.Raw = PrettyJson(data)
+		} else {
+			var data []any
+			for i := 0; i < 3; i++ {
+				data = append(data, ModelDataFaker(res.Schema))
+			}
+			req.Body.Raw = PrettyJson(data)
+		}
+
+	}
+	if action.Pagination {
+		req.Url.AddQuery("page", ":page", "specify page to load (optional)")
+		req.Url.AddQuery("size", ":size", "specify size of results (optional, default 10, max 100)")
+	}
+
+	res.PostmanGroup.AppendItem(postman.Item{
+		Name:    action.Name,
+		Request: &req,
+	})
 }
 
 type Endpoint struct {
-	Name        string                        `json:"name"`
-	Label       string                        `json:"-"`
-	Method      Method                        `json:"method"`
-	URL         string                        `json:"-"`
-	PKUrl       bool                          `json:"pk_url"`
-	AbsoluteURI string                        `json:"url"`
-	Description string                        `json:"description"`
-	Handler     func(context *Context) *Error `json:"-"`
-	Resource    *Resource                     `json:"-"`
-	URLParams   []Filter                      `json:"-"`
+	Name              string                        `json:"name"`
+	Label             string                        `json:"-"`
+	Method            Method                        `json:"method"`
+	URL               string                        `json:"-"`
+	PKUrl             bool                          `json:"pk_url"`
+	AbsoluteURI       string                        `json:"url"`
+	Description       string                        `json:"description"`
+	Handler           func(context *Context) *Error `json:"-"`
+	Resource          *Resource                     `json:"-"`
+	URLParams         []Filter                      `json:"-"`
+	Batch             bool                          `json:"batch"`
+	AcceptData        bool                          `json:"accept_data"`
+	Filterable        bool                          `json:"filterable"`
+	Pagination        bool                          `json:"pagination"`
+	PostmanCollection postman.Collection            `json:"-"`
 }
 
 // Filter represents a filter for data retrieval.
@@ -186,6 +243,118 @@ func (action *Endpoint) RegisterRouter() {
 	default:
 		log.Fatalf("invalid method %s for %s@%s", action.Method, action.Name, action.Resource.Name)
 	}
+}
+
+func (action *Endpoint) GenerateDescription() string {
+
+	var description = []string{
+		action.Description,
+		"---",
+	}
+
+	if action.AcceptData {
+		description = append(description, "- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.")
+	}
+
+	if action.Batch {
+		description = append(description, "- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.")
+	}
+
+	if action.Pagination {
+		description = append(description, "- Supports pagination. You can specify the page number and size using query parameters: `page` and `size`.")
+	}
+
+	if action.Filterable {
+		description = append(description, "- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)")
+	}
+
+	if action.PKUrl {
+		description = append(description, "- This endpoint requires a primary key in the URL as following format "+action.AbsoluteURI)
+	}
+
+	if action.AcceptData {
+		description = append(description, "---")
+		description = append(description, "### Acceptable fields and their types:")
+		description = append(description, "| Field | Type | Description | Validation |")
+		description = append(description, "| ------ | ------ | ------ | ------ |")
+		for _, field := range action.Resource.Schema.Fields {
+			var jsonField = strings.Split(field.Tag.Get("json"), ",")[0]
+			if field.Tag.Get("json") == "-" || strings.Contains(field.Tag.Get("json"), "omit_decode") {
+				jsonField = field.Name
+			}
+
+			if strings.TrimSpace(string(field.GORMDataType)) == "" {
+				continue
+			}
+
+			var additional []string
+			if field.PrimaryKey {
+				additional = append(additional, "`Primary Key`")
+			}
+			if field.AutoIncrement {
+				additional = append(additional, "`AutoIncrement`")
+			}
+			if field.Unique {
+				additional = append(additional, "`Unique`")
+			}
+			if field.HasDefaultValue {
+				additional = append(additional, "`Default:"+field.DefaultValue+"`")
+			}
+			if field.FieldType.Kind() == reflect.Ptr {
+				additional = append(additional, "`Accept Null`")
+			}
+			if field.Size > 0 {
+				additional = append(additional, "`Size:"+strconv.Itoa(field.Size)+"`")
+			}
+			if field.Precision > 0 {
+				additional = append(additional, "`Precision:"+strconv.Itoa(field.Precision)+"`")
+			}
+			if field.Scale > 0 {
+				additional = append(additional, "`Scale:"+strconv.Itoa(field.Scale)+"`")
+			}
+			if !field.Updatable {
+				additional = append(additional, "`Cannot be updated`")
+			}
+			if !field.Creatable {
+				additional = append(additional, "`Cannot be created`")
+			}
+			if !field.Readable {
+				additional = append(additional, "`Unreadable`")
+			}
+			var validation = "`none`"
+			if field.Tag.Get("validation") != "" {
+				validation = field.Tag.Get("validation")
+			}
+
+			description = append(description, fmt.Sprintf("| `%s` | %s | %s | %s |", jsonField, field.GORMDataType, strings.Join(additional, ","), validation))
+		}
+
+	}
+
+	if action.Filterable {
+		var associations []string
+		for _, field := range action.Resource.Schema.Fields {
+			if strings.TrimSpace(string(field.GORMDataType)) == "" {
+
+				if field.FieldType.Kind() == reflect.Slice {
+					associations = append(associations, fmt.Sprintf("| %s | `%s` | %s |", field.Name, "has many", "associations="+field.Name))
+				} else {
+					associations = append(associations, fmt.Sprintf("| %s | `%s` | %s |", field.Name, "belongs to", "associations="+field.Name))
+				}
+
+			}
+		}
+		if len(associations) > 0 {
+			description = append(description, "---")
+			description = append(description, "### Loadable Associations:")
+			description = append(description, "| Association | Type | URL Pattern |")
+			description = append(description, "| ------ | ------ | ------ |")
+			description = append(description, associations...)
+			description = append(description, "\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)")
+		}
+	}
+
+	return strings.Join(description, "\n")
 }
 
 // CreateIndirectObject is a method of the Context type that returns a new indirect reflect.Value of the context Object's type.

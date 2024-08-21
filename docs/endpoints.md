@@ -122,5 +122,38 @@ This example retrieves only the username and name fields from all records in the
 - **Model Information:** Using `GET /admin/rest/models`, it is possible to get information about all available models.
 
 ---
+#### Postman Collection Generator
+
+Restify enables developers to automatically generate Postman collections without requiring manual input. These collections are thoughtfully structured, providing comprehensive explanations of the API, making it easy for developers to understand and utilize them effectively.
+
+1- Enable Postman Collection Generator
+```golang
+func (app App) Register() error {
+    restify.EnablePostman()
+    restify.SetPostmanAuthorization(restify.AuthTypeHeader, "apikey", "secret") //force apikey and secret authentication in header
+      /*
+      restify.SetPostmanAuthorization(restify.AuthTypeBasic) // force basic authentication on Restify collection
+      restify.SetPostmanAuthorization(AuthTypeNone)
+      restify.SetPostmanAuthorization(AuthTypeBearer)   
+      restify.SetPostmanAuthorization(AuthTypeDigest)   
+      restify.SetPostmanAuthorization(AuthTypeEdgeGrid) 
+      restify.SetPostmanAuthorization(AuthTypeHawk)   
+      restify.SetPostmanAuthorization(AuthTypeOAuth1)   
+      restify.SetPostmanAuthorization(AuthTypeOAuth2)   
+      restify.SetPostmanAuthorization(AuthTypeNTLM)    
+      restify.SetPostmanAuthorization(AuthTypeHeader)
+      */
+	return nil
+}
+```
+
+2- Download Collection
+```bash
+curl -o "./collection.json" "{{ base_path }}/{{ prefix }}/postman" 
+```
+
+
+---
+
 #### Example Postman Collection
 **[Postman Collection](https://github.com/getevo/restify/blob/master/example/example.postman_collection.json)**

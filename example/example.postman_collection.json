@@ -1,39 +1,19 @@
 {
 	"info": {
-		"_postman_id": "25313d42-f359-4fbc-a91e-49961dfcc28f",
-		"name": "Example",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32628445"
+		"name": "Restify",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Order",
+			"name": "User",
+			"description": "User API List",
 			"item": [
 				{
-					"name": "Model Info",
+					"name": "ModelInfo",
 					"request": {
 						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/order",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"order"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set",
-					"request": {
-						"method": "POST",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 1,\r\n        \"quantitiy\": 4,\r\n        \"total\": 200\r\n    },\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 2,\r\n        \"quantitiy\": 6,\r\n        \"total\": 180\r\n    },\r\n    {\r\n        \"order_id\": 1,\r\n        \"user_id\": 1,\r\n        \"product_id\": 3,\r\n        \"quantitiy\": 6,\r\n        \"total\": 300\r\n    }\r\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -41,101 +21,424 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/order/set?order_id[eq]=1&user_id[eq]=1",
+							"raw": "{{ base_url }}/admin/rest/user",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"order",
-								"set"
-							],
-							"query": [
-								{
-									"key": "order_id[eq]",
-									"value": "1"
-								},
-								{
-									"key": "user_id[eq]",
-									"value": "1"
-								}
+								"/admin/rest/user"
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "return information of the model\n---"
+					}
 				},
 				{
-					"name": "Get All",
+					"name": "Set",
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "POST",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{ base }}/order/all?associations=Product",
+							"raw": "{{ base_url }}/admin/rest/user/set",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"order",
-								"all"
-							],
-							"query": [
-								{
-									"key": "associations",
-									"value": "Product"
-								}
+								"/admin/rest/user/set"
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "set objects in database\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `UUID` | string | `Size:24` | `none` |\n| `username` | string | `Size:255` | required |\n| `password` | string | `Default:`,`Size:512` | `none` |\n| `is_admin` | bool |  | `none` |\n| `name` | string | `Size:255` | required,alpha |\n| `email` | string | `Size:255` | required,email |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "All",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/all",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/all"
+							]
+						},
+						"description": "return all objects in one call\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
 					"name": "Paginate",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{ base }}/order/all",
+							"raw": "{{ base_url }}/admin/rest/user/paginate",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"order",
-								"all"
+								"/admin/rest/user/paginate"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": ":page",
+									"description": "specify page to load (optional)"
+								},
+								{
+									"key": "size",
+									"value": ":size",
+									"description": "specify size of results (optional, default 10, max 100)"
+								}
 							]
 						},
-						"description": "This endpoint retrieves all orders.\n\n### Request\n\n- Method: GET\n    \n- URL: {{ base }}/order/all\n    \n\n### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n- { \"data\": \\[\\], \"total\": 0, \"offset\": 0, \"total_pages\": 0, \"current_page\": 0, \"size\": 0, \"success\": true, \"error\": \"\", \"type\": \"\", \"validation_error\": null}"
-					},
-					"response": []
+						"description": "paginate objects\n---\n- Supports pagination. You can specify the page number and size using query parameters: `page` and `size`.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/:user_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/:user_id"
+							]
+						},
+						"description": "get single object using primary key\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n- This endpoint requires a primary key in the URL as following format /admin/rest/user/:user_id\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user"
+							]
+						},
+						"description": "create an object using given values\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `UUID` | string | `Size:24` | `none` |\n| `username` | string | `Size:255` | required |\n| `password` | string | `Default:`,`Size:512` | `none` |\n| `is_admin` | bool |  | `none` |\n| `name` | string | `Size:255` | required,alpha |\n| `email` | string | `Size:255` | required,email |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchCreate",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/batch"
+							]
+						},
+						"description": "create a batch of objects\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `UUID` | string | `Size:24` | `none` |\n| `username` | string | `Size:255` | required |\n| `password` | string | `Default:`,`Size:512` | `none` |\n| `is_admin` | bool |  | `none` |\n| `name` | string | `Size:255` | required,alpha |\n| `email` | string | `Size:255` | required,email |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchUpdate",
+					"request": {
+						"method": "PATCH",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/batch"
+							]
+						},
+						"description": "update batch objects\n---\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    },\n    {\n        \"UUID\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"email\": \"\",\n        \"is_admin\": false,\n        \"name\": \"\",\n        \"orders\": null,\n        \"password\": \"\",\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"username\": \"\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/:user_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/:user_id"
+							]
+						},
+						"description": "update single object select using primary key\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- This endpoint requires a primary key in the URL as following format /admin/rest/user/:user_id\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `UUID` | string | `Size:24` | `none` |\n| `username` | string | `Size:255` | required |\n| `password` | string | `Default:`,`Size:512` | `none` |\n| `is_admin` | bool |  | `none` |\n| `name` | string | `Size:255` | required,alpha |\n| `email` | string | `Size:255` | required,email |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchDelete",
+					"request": {
+						"method": "DELETE",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/batch"
+							]
+						},
+						"description": "batch delete objects\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Orders | `has many` | associations=Orders |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/user/:user_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/user/:user_id"
+							]
+						},
+						"description": "delete existing object using primary key\n---\n- This endpoint requires a primary key in the URL as following format /admin/rest/user/:user_id"
+					}
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"description": "Order API List",
+			"item": [
+				{
+					"name": "ModelInfo",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/order",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/order"
+							]
+						},
+						"description": "return information of the model\n---"
+					}
+				},
+				{
+					"name": "Set",
+					"request": {
+						"method": "POST",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"order_id\": 0,\n        \"product\": null,\n        \"product_id\": 0,\n        \"quantity\": 0,\n        \"total\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"order_id\": 0,\n        \"product\": null,\n        \"product_id\": 0,\n        \"quantity\": 0,\n        \"total\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"order_id\": 0,\n        \"product\": null,\n        \"product_id\": 0,\n        \"quantity\": 0,\n        \"total\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/order/set",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/order/set"
+							]
+						},
+						"description": "set objects in database\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `row_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `order_id` | int | `Size:64` | `none` |\n| `user_id` | int | `Size:64` | `none` |\n| `product_id` | int | `Size:64` | `none` |\n| `quantity` | int | `Size:64` | `none` |\n| `total` | int | `Size:64` | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Product | `belongs to` | associations=Product |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "All",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/order/all",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/order/all"
+							]
+						},
+						"description": "return all objects in one call\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Product | `belongs to` | associations=Product |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/order/paginate",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/order/paginate"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": ":page",
+									"description": "specify page to load (optional)"
+								},
+								{
+									"key": "size",
+									"value": ":size",
+									"description": "specify size of results (optional, default 10, max 100)"
+								}
+							]
+						},
+						"description": "paginate objects\n---\n- Supports pagination. You can specify the page number and size using query parameters: `page` and `size`.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Product | `belongs to` | associations=Product |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/order/:row_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/order/:row_id"
+							]
+						},
+						"description": "get single object using primary key\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n- This endpoint requires a primary key in the URL as following format /admin/rest/order/:row_id\n---\n### Loadable Associations:\n| Association | Type | URL Pattern |\n| ------ | ------ | ------ |\n| Product | `belongs to` | associations=Product |\n\n\nmore information: [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				}
 			]
 		},
 		{
 			"name": "Product",
+			"description": "Product API List",
 			"item": [
 				{
-					"name": "Model Info",
+					"name": "ModelInfo",
 					"request": {
 						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/product",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"product"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create",
-					"request": {
-						"method": "PUT",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"reza\",\r\n    \"name\": \"reza\",\r\n    \"email\": \"reza@hashemi.dev\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -143,25 +446,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/product",
+							"raw": "{{ base_url }}/admin/rest/product",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"product"
+								"/admin/rest/product"
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "return information of the model\n---"
+					}
 				},
 				{
-					"name": "Batch Create",
+					"name": "All",
 					"request": {
-						"method": "PUT",
-						"header": [],
+						"method": "GET",
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"name\": \"Milk\",\r\n        \"unit_price\": 50\r\n    },\r\n    {\r\n        \"name\": \"Bread\",\r\n        \"unit_price\": 30\r\n    },\r\n    {\r\n        \"name\": \"Eggs\",\r\n        \"unit_price\": 60\r\n    },\r\n    {\r\n        \"name\": \"Butter\",\r\n        \"unit_price\": 80\r\n    },\r\n    {\r\n        \"name\": \"Cheese\",\r\n        \"unit_price\": 120\r\n    },\r\n    {\r\n        \"name\": \"Apples\",\r\n        \"unit_price\": 150\r\n    },\r\n    {\r\n        \"name\": \"Bananas\",\r\n        \"unit_price\": 40\r\n    },\r\n    {\r\n        \"name\": \"Tomatoes\",\r\n        \"unit_price\": 70\r\n    },\r\n    {\r\n        \"name\": \"Chicken Breast\",\r\n        \"unit_price\": 250\r\n    },\r\n    {\r\n        \"name\": \"Rice\",\r\n        \"unit_price\": 90\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -169,62 +470,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/product/batch",
+							"raw": "{{ base_url }}/admin/rest/product/all",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"product",
-								"batch"
+								"/admin/rest/product/all"
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/product/all",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"product",
-								"all"
-							]
-						}
-					},
-					"response": []
+						},
+						"description": "return all objects in one call\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
 					"name": "Paginate",
 					"request": {
 						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/product/all",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"product",
-								"all"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update",
-					"request": {
-						"method": "PATCH",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"unit_price\": 50\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -232,256 +494,134 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/product/:product_id",
+							"raw": "{{ base_url }}/admin/rest/product/paginate",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"product",
-								":product_id"
-							],
-							"variable": [
-								{
-									"key": "product_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Update",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"unit_price\":100\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/product/batch?unit_price[gt]=100",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"product",
-								"batch"
+								"/admin/rest/product/paginate"
 							],
 							"query": [
 								{
-									"key": "unit_price[gt]",
-									"value": "100"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Delete",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/user/batch?price[gt]=200",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user",
-								"batch"
-							],
-							"query": [
-								{
-									"key": "price[gt]",
-									"value": "200"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/product/:product_id",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"product",
-								":product_id"
-							],
-							"variable": [
-								{
-									"key": "product_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "User",
-			"item": [
-				{
-					"name": "Model Info",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/user",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"reza\",\r\n    \"name\": \"reza\",\r\n    \"email\": \"reza@hashemi.dev\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/user",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Create",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"username\": \"john_doe\",\r\n        \"name\": \"John Doe\",\r\n        \"email\": \"john.doe@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"jane_smith\",\r\n        \"name\": \"Jane Smith\",\r\n        \"email\": \"jane.smith@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"alex_jones\",\r\n        \"name\": \"Alex Jones\",\r\n        \"email\": \"alex.jones@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"michael_clark\",\r\n        \"name\": \"Michael Clark\",\r\n        \"email\": \"michael.clark@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"emily_davis\",\r\n        \"name\": \"Emily Davis\",\r\n        \"email\": \"emily.davis@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"chris_lee\",\r\n        \"name\": \"Chris Lee\",\r\n        \"email\": \"chris.lee@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"sarah_white\",\r\n        \"name\": \"Sarah White\",\r\n        \"email\": \"sarah.white@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"david_martin\",\r\n        \"name\": \"David Martin\",\r\n        \"email\": \"david.martin@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"laura_johnson\",\r\n        \"name\": \"Laura Johnson\",\r\n        \"email\": \"laura.johnson@example.com\"\r\n    },\r\n    {\r\n        \"username\": \"daniel_brown\",\r\n        \"name\": \"Daniel Brown\",\r\n        \"email\": \"daniel.brown@example.com\"\r\n    }\r\n]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/user/batch",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user",
-								"batch"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/user/all?user_id[eq]=1&associations=Orders,Orders.Product",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user",
-								"all"
-							],
-							"query": [
-								{
-									"key": "user_id[eq]",
-									"value": "1"
+									"key": "page",
+									"value": ":page",
+									"description": "specify page to load (optional)"
 								},
 								{
-									"key": "associations",
-									"value": "Orders,Orders.Product"
+									"key": "size",
+									"value": ":size",
+									"description": "specify size of results (optional, default 10, max 100)"
 								}
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "paginate objects\n---\n- Supports pagination. You can specify the page number and size using query parameters: `page` and `size`.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
-					"name": "Paginate",
+					"name": "Get",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{ base }}/user/all",
+							"raw": "{{ base_url }}/admin/rest/product/:product_id",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"user",
-								"all"
+								"/admin/rest/product/:product_id"
 							]
 						},
-						"description": "\n### Retrieve All Users\n\nThis endpoint makes an HTTP GET request to retrieve all users.\n\n#### Request\n\nNo request body is required for this request.\n\n#### Response\n\nThe response will be a JSON object containing an array of user objects, each representing a user's details. The JSON schema for the response will be provided to describe the structure of the response data.\n\n"
-					},
-					"response": []
+						"description": "get single object using primary key\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n- This endpoint requires a primary key in the URL as following format /admin/rest/product/:product_id"
+					}
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/product",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/product"
+							]
+						},
+						"description": "create an object using given values\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `product_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `name` | string | `Size:255` | `none` |\n| `unit_price` | int | `Size:64` | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchCreate",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/product/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/product/batch"
+							]
+						},
+						"description": "create a batch of objects\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `product_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `name` | string | `Size:255` | `none` |\n| `unit_price` | int | `Size:64` | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchUpdate",
+					"request": {
+						"method": "PATCH",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/product/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/product/batch"
+							]
+						},
+						"description": "update batch objects\n---\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
 					"name": "Update",
 					"request": {
 						"method": "PATCH",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"reza_username\"\r\n}",
+							"raw": "[\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    },\n    {\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"name\": \"\",\n        \"unit_price\": 0,\n        \"updated_at\": \"0001-01-01T00:00:00Z\"\n    }\n]\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -489,94 +629,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/user/:user_id",
+							"raw": "{{ base_url }}/admin/rest/product/:product_id",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"user",
-								":user_id"
-							],
-							"variable": [
-								{
-									"key": "user_id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Update",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"password\":\"123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/user/batch?unsafe=1",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user",
-								"batch"
-							],
-							"query": [
-								{
-									"key": "unsafe",
-									"value": "1"
-								}
+								"/admin/rest/product/:product_id"
 							]
 						},
-						"description": "\n### Update User Batch by Email\n\nThis endpoint is used to update user information in batch based on email.\n\n#### Request\n\n- Method: `PATCH`\n- URL: `{{ base }}/user/batch?email[contains]=jane`\n\n##### Request Body\n- Type: JSON\n  - `username`: (string) The new username for the user.\n\n#### Response\n\nThe response for this request is documented as a JSON schema. \n"
-					},
-					"response": []
+						"description": "update single object select using primary key\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- This endpoint requires a primary key in the URL as following format /admin/rest/product/:product_id\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `product_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `name` | string | `Size:255` | `none` |\n| `unit_price` | int | `Size:64` | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
 				},
 				{
-					"name": "Set",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/user/set",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"user",
-								"set"
-							]
-						},
-						"description": "\nThis endpoint allows you to set user information by making an HTTP POST request to {{ base }}/user/set. The request should include the necessary payload in the raw request body.\n\n### Request Body\nThe request body should contain the user information in the following format:\n- `key1`: Description of the user information.\n- `key2`: Description of the user information.\n\n### Response\nThe response will include the status of the operation and any relevant information about the user set action.\n"
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Delete",
+					"name": "BatchDelete",
 					"request": {
 						"method": "DELETE",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -584,32 +653,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/user/batch?name[eq]=reza",
+							"raw": "{{ base_url }}/admin/rest/product/batch",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"user",
-								"batch"
-							],
-							"query": [
-								{
-									"key": "name[eq]",
-									"value": "reza"
-								}
+								"/admin/rest/product/batch"
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "batch delete objects\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
 					"name": "Delete",
 					"request": {
 						"method": "DELETE",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -617,54 +677,29 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/user/:user_id",
+							"raw": "{{ base_url }}/admin/rest/product/:product_id",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"user",
-								":user_id"
-							],
-							"variable": [
-								{
-									"key": "user_id",
-									"value": "20"
-								}
+								"/admin/rest/product/:product_id"
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "delete existing object using primary key\n---\n- This endpoint requires a primary key in the URL as following format /admin/rest/product/:product_id"
+					}
 				}
 			]
 		},
 		{
 			"name": "Article",
+			"description": "Article API List",
 			"item": [
 				{
-					"name": "Model Info",
+					"name": "ModelInfo",
 					"request": {
 						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/article",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create",
-					"request": {
-						"method": "PUT",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"body\":\"test\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -672,166 +707,24 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/article",
+							"raw": "{{ base_url }}/admin/rest/article",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"article"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Create",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"body\": \"test1\"\r\n    },\r\n    {\r\n        \"body\": \"test2\"\r\n    },\r\n    {\r\n        \"body\": \"test3\"\r\n    }\r\n]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/article/batch",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article",
-								"batch"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/article/all?user_id[eq]=1&associations=Orders,Orders.Product",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article",
-								"all"
-							],
-							"query": [
-								{
-									"key": "user_id[eq]",
-									"value": "1"
-								},
-								{
-									"key": "associations",
-									"value": "Orders,Orders.Product"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Paginate",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ base }}/article/all",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article",
-								"all"
+								"/admin/rest/article"
 							]
 						},
-						"description": "\n### Retrieve All Users\n\nThis endpoint makes an HTTP GET request to retrieve all users.\n\n#### Request\n\nNo request body is required for this request.\n\n#### Response\n\nThe response will be a JSON object containing an array of user objects, each representing a user's details. The JSON schema for the response will be provided to describe the structure of the response data.\n\n"
-					},
-					"response": []
-				},
-				{
-					"name": "Update",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"body\":\"new body\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/article/:article_id",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article",
-								":article_id"
-							],
-							"variable": [
-								{
-									"key": "article_id",
-									"value": "15"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Batch Update",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"body\":\"123\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ base }}/article/batch?unsafe=1",
-							"host": [
-								"{{ base }}"
-							],
-							"path": [
-								"article",
-								"batch"
-							],
-							"query": [
-								{
-									"key": "unsafe",
-									"value": "1"
-								}
-							]
-						},
-						"description": "\n### Update User Batch by Email\n\nThis endpoint is used to update user information in batch based on email.\n\n#### Request\n\n- Method: `PATCH`\n- URL: `{{ base }}/user/batch?email[contains]=jane`\n\n##### Request Body\n- Type: JSON\n  - `username`: (string) The new username for the user.\n\n#### Response\n\nThe response for this request is documented as a JSON schema. \n"
-					},
-					"response": []
+						"description": "return information of the model\n---"
+					}
 				},
 				{
 					"name": "Set",
 					"request": {
 						"method": "POST",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\"body\":\"newbody\"}\r\n]",
+							"raw": "[\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    }\n]\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -839,33 +732,23 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/article/set?user_id[eq]=88",
+							"raw": "{{ base_url }}/admin/rest/article/set",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"article",
-								"set"
-							],
-							"query": [
-								{
-									"key": "user_id[eq]",
-									"value": "88"
-								}
+								"/admin/rest/article/set"
 							]
 						},
-						"description": "\nThis endpoint allows you to set user information by making an HTTP POST request to {{ base }}/user/set. The request should include the necessary payload in the raw request body.\n\n### Request Body\nThe request body should contain the user information in the following format:\n- `key1`: Description of the user information.\n- `key2`: Description of the user information.\n\n### Response\nThe response will include the status of the operation and any relevant information about the user set action.\n"
-					},
-					"response": []
+						"description": "set objects in database\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `article_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `user_id` | int | `Size:64` | `none` |\n| `body` | string |  | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
 				},
 				{
-					"name": "Batch Delete",
+					"name": "All",
 					"request": {
-						"method": "DELETE",
-						"header": [],
+						"method": "GET",
 						"body": {
 							"mode": "raw",
-							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -873,32 +756,206 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/article/batch?user_id[eq]=3",
+							"raw": "{{ base_url }}/admin/rest/article/all",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"article",
-								"batch"
+								"/admin/rest/article/all"
+							]
+						},
+						"description": "return all objects in one call\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Paginate",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/paginate",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/paginate"
 							],
 							"query": [
 								{
-									"key": "user_id[eq]",
-									"value": "3"
+									"key": "page",
+									"value": ":page",
+									"description": "specify page to load (optional)"
+								},
+								{
+									"key": "size",
+									"value": ":size",
+									"description": "specify size of results (optional, default 10, max 100)"
 								}
 							]
-						}
-					},
-					"response": []
+						},
+						"description": "paginate objects\n---\n- Supports pagination. You can specify the page number and size using query parameters: `page` and `size`.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/:article_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/:article_id"
+							]
+						},
+						"description": "get single object using primary key\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)\n- This endpoint requires a primary key in the URL as following format /admin/rest/article/:article_id"
+					}
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article"
+							]
+						},
+						"description": "create an object using given values\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `article_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `user_id` | int | `Size:64` | `none` |\n| `body` | string |  | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchCreate",
+					"request": {
+						"method": "PUT",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/batch"
+							]
+						},
+						"description": "create a batch of objects\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `article_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `user_id` | int | `Size:64` | `none` |\n| `body` | string |  | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchUpdate",
+					"request": {
+						"method": "PATCH",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/batch"
+							]
+						},
+						"description": "update batch objects\n---\n- Supports batch operations. You can send multiple requests in one request body, this mode requires body `application/json` as array of objects formatted.\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    },\n    {\n        \"body\": \"\",\n        \"created_at\": \"0001-01-01T00:00:00Z\",\n        \"deleted\": false,\n        \"deleted_at\": null,\n        \"updated_at\": \"0001-01-01T00:00:00Z\",\n        \"user_id\": 0\n    }\n]\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/:article_id",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/:article_id"
+							]
+						},
+						"description": "update single object select using primary key\n---\n- Accepts body in `application/json`,`application/x-www-form-urlencoded` and `multipart/form-data` format.\n- This endpoint requires a primary key in the URL as following format /admin/rest/article/:article_id\n---\n### Acceptable fields and their types:\n| Field | Type | Description | Validation |\n| ------ | ------ | ------ | ------ |\n| `article_id` | int | `Primary Key`,`AutoIncrement`,`Default:`,`Size:64` | `none` |\n| `user_id` | int | `Size:64` | `none` |\n| `body` | string |  | `none` |\n| `created_at` | time |  | `none` |\n| `updated_at` | time |  | `none` |\n| `deleted` | bool |  | `none` |\n| `deleted_at` | time | `Accept Null` | `none` |"
+					}
+				},
+				{
+					"name": "BatchDelete",
+					"request": {
+						"method": "DELETE",
+						"body": {
+							"mode": "raw",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ base_url }}/admin/rest/article/batch",
+							"host": [
+								"{{ base_url }}"
+							],
+							"path": [
+								"/admin/rest/article/batch"
+							]
+						},
+						"description": "batch delete objects\n---\n- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)"
+					}
 				},
 				{
 					"name": "Delete",
 					"request": {
 						"method": "DELETE",
-						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -906,59 +963,15 @@
 							}
 						},
 						"url": {
-							"raw": "{{ base }}/article/:article_id",
+							"raw": "{{ base_url }}/admin/rest/article/:article_id",
 							"host": [
-								"{{ base }}"
+								"{{ base_url }}"
 							],
 							"path": [
-								"article",
-								":article_id"
-							],
-							"variable": [
-								{
-									"key": "article_id",
-									"value": "38"
-								}
+								"/admin/rest/article/:article_id"
 							]
-						}
-					},
-					"response": []
-				}
-			],
-			"auth": {
-				"type": "basic",
-				"basic": [
-					{
-						"key": "username",
-						"value": "chris_lee",
-						"type": "string"
-					},
-					{
-						"key": "password",
-						"value": "123456",
-						"type": "string"
-					}
-				]
-			},
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
-						"exec": [
-							""
-						]
+						},
+						"description": "delete existing object using primary key\n---\n- This endpoint requires a primary key in the URL as following format /admin/rest/article/:article_id"
 					}
 				}
 			]

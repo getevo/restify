@@ -1,6 +1,8 @@
 package restify
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/getevo/evo/v2/lib/db"
 	"path/filepath"
@@ -40,6 +42,9 @@ func UseModel(model any) *Resource {
 	if !features.API {
 		return &resource
 	}
+
+	resource.PostmanGroup = collection.CreateFolder(stmt.Schema.Name, stmt.Schema.Name+" API List")
+
 	var handler = Handler{}
 	resource.SetAction(&Endpoint{
 		Name:        "MODEL INFO",
@@ -56,6 +61,9 @@ func UseModel(model any) *Resource {
 			URL:         "/set",
 			PKUrl:       false,
 			Handler:     handler.Set,
+			AcceptData:  true,
+			Batch:       true,
+			Filterable:  true,
 			Description: "set objects in database",
 		})
 	}
@@ -66,6 +74,7 @@ func UseModel(model any) *Resource {
 			Method:      MethodGET,
 			URL:         "/all",
 			Handler:     handler.All,
+			Filterable:  true,
 			Description: "return all objects in one call",
 		})
 
@@ -74,6 +83,8 @@ func UseModel(model any) *Resource {
 			Method:      MethodGET,
 			URL:         "/paginate",
 			Handler:     handler.Paginate,
+			Filterable:  true,
+			Pagination:  true,
 			Description: "paginate objects",
 		})
 
@@ -83,6 +94,7 @@ func UseModel(model any) *Resource {
 			URL:         "/",
 			PKUrl:       true,
 			Handler:     handler.Get,
+			Filterable:  true,
 			Description: "get single object using primary key",
 		})
 	}
@@ -92,6 +104,7 @@ func UseModel(model any) *Resource {
 			Method:      MethodPUT,
 			URL:         "/",
 			Handler:     handler.Create,
+			AcceptData:  true,
 			Description: "create an object using given values",
 		})
 		resource.SetAction(&Endpoint{
@@ -100,6 +113,8 @@ func UseModel(model any) *Resource {
 			URL:         "/batch",
 			PKUrl:       false,
 			Handler:     handler.BatchCreate,
+			AcceptData:  true,
+			Batch:       true,
 			Description: "create a batch of objects",
 		})
 	}
@@ -110,6 +125,8 @@ func UseModel(model any) *Resource {
 			URL:         "/batch",
 			PKUrl:       false,
 			Handler:     handler.BatchUpdate,
+			Filterable:  true,
+			Batch:       true,
 			Description: "update batch objects",
 		})
 		resource.SetAction(&Endpoint{
@@ -118,6 +135,7 @@ func UseModel(model any) *Resource {
 			URL:         "/",
 			PKUrl:       true,
 			Handler:     handler.Update,
+			AcceptData:  true,
 			Description: "update single object select using primary key",
 		})
 
@@ -130,6 +148,7 @@ func UseModel(model any) *Resource {
 			URL:         "/batch",
 			PKUrl:       false,
 			Handler:     handler.BatchDelete,
+			Filterable:  true,
 			Description: "batch delete objects",
 		})
 		resource.SetAction(&Endpoint{
@@ -226,4 +245,14 @@ func equal(val1, val2 reflect.Value) bool {
 	}
 
 	return true
+}
+
+func PrettyJson(v interface{}) string {
+	var out bytes.Buffer
+	enc := json.NewEncoder(&out)
+	enc.SetIndent("", "    ")
+	if err := enc.Encode(v); err != nil {
+		return "{}"
+	}
+	return out.String()
 }

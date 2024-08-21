@@ -11,6 +11,10 @@ type App struct{}
 
 func (app App) Register() error {
 	restify.SetPrefix("/admin/rest")
+	restify.EnablePostman()
+
+	//restify.SetPostmanAuthorization(restify.AuthTypeHeader, "username", "password") //force user and password authentication in header
+	restify.SetPostmanAuthorization(restify.AuthTypeBasic) // force basic authentication on Restify collection
 	db.UseModel(User{}, Order{}, Product{}, Article{})
 	evo.GetDBO().AutoMigrate(Article{}, User{}, Order{}, Product{})
 	return nil
