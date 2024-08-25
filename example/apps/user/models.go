@@ -15,7 +15,7 @@ import (
 )
 
 type User struct {
-	UserID   int     `gorm:"column:user_id;primaryKey;autoIncrement" json:"id"`
+	UserID   int     `gorm:"column:user_id;primaryKey;autoIncrement" json:"user_id"`
 	UUID     string  `gorm:"column:uuid;index;size:24" json:"UUID"`
 	Username string  `gorm:"column:username;size:255;uniqueIndex" validation:"required" json:"username"`
 	Password string  `gorm:"column:password;size:512;not null;DEFAULT:''" json:"password,omit_encode" `
@@ -34,8 +34,14 @@ func (*User) TableName() string {
 }
 
 func (user *User) OnBeforeCreate(context *restify.Context) error {
+	fmt.Println("OnBeforeCreate called")
 	user.UUID = uuid.New().String()
 	user.Password = GetMD5Hash(user.Password)
+	return nil
+}
+
+func (user *User) OnBeforeSave(context *restify.Context) error {
+	fmt.Println("OnBeforeSave called")
 	return nil
 }
 
@@ -43,6 +49,37 @@ func (user *User) OnBeforeUpdate(context *restify.Context) error {
 	if user.Password != "" {
 		user.Password = GetMD5Hash(user.Password)
 	}
+	fmt.Println("OnBeforeUpdate called")
+	return nil
+}
+
+func (user *User) OnBeforeDelete(context *restify.Context) error {
+	fmt.Println("OnBeforeDelete called")
+	return nil
+}
+
+func (user *User) OnAfterCreate(context *restify.Context) error {
+	fmt.Println("OnAfterCreate called")
+	return nil
+}
+
+func (user *User) OnAfterUpdate(context *restify.Context) error {
+	fmt.Println("OnAfterUpdate called")
+	return nil
+}
+
+func (user *User) OnAfterSave(context *restify.Context) error {
+	fmt.Println("OnAfterSave called")
+	return nil
+}
+
+func (user *User) OnAfterDelete(context *restify.Context) error {
+	fmt.Println("OnAfterDelete called")
+	return nil
+}
+
+func (user *User) OnAfterGet(context *restify.Context) error {
+	fmt.Println("OnAfterGet called")
 	return nil
 }
 

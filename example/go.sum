@@ -39,6 +39,8 @@ github.com/dnaeon/go-vcr v1.1.0/go.mod h1:M7tiix8f0r6mKKJ3Yq/kqU1OYf3MnfmBWVbPx/
 github.com/dnaeon/go-vcr v1.2.0/go.mod h1:R4UdLID7HZT3taECzJs4YgbbH6PIGXB6W/sc5OLb6RQ=
 github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92 h1:B0LeqvXpWfmZ7sKgD2K9uespbaAzACdvgGq5XIvt4K4=
 github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92/go.mod h1:+dLcGWiqEDKkqvzkkfth4e1qTAhQyP9EQcU4mFdeXV4=
+github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c h1:L51ItdRgahgFY0zOeaF6hk+540y8hB1Reyed8b6/Vto=
+github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c/go.mod h1:+dLcGWiqEDKkqvzkkfth4e1qTAhQyP9EQcU4mFdeXV4=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 h1:yPW/dYX0id8nVZ7be3Ku774zGl9hvcrimVBQp2o0poA=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9/go.mod h1:/vW02CjTwXnxp418rxOH+H60g370rfUOFitfnHLy+Po=
 github.com/getevo/postman v0.0.0-20240821202756-0e5fab66b666 h1:rfblSlry6uZjqA2oRDAhMGIlWDDjR1NFGxgioOYEqeM=

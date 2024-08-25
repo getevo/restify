@@ -53,25 +53,9 @@ func (Handler) Create(context *Context) *Error {
 		return context.Error(err, 400)
 	}
 
-	if obj, ok := ptr.(interface{ OnBeforeCreate(context *Context) error }); ok {
-		err := obj.OnBeforeCreate(context)
-		if err != nil {
-			return context.Error(err, 500)
-		}
-	}
-	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
-		if err := obj.OnBeforeSave(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-	if obj, ok := ptr.(interface{ ValidateCreate(context *Context) error }); ok {
-		if err := obj.ValidateCreate(context); err != nil {
-			return context.Error(err, 412)
-		}
-	}
-
-	if !context.Validate(ptr) {
-		return nil
+	httpError := callBeforeCreateHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
 
 	context.applyOverrides(object)
@@ -80,16 +64,9 @@ func (Handler) Create(context *Context) *Error {
 		return context.Error(err, 500)
 	}
 
-	if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {
-		if err := obj.OnAfterCreate(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
-	if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
-		if err := obj.OnAfterSave(context); err != nil {
-			return context.Error(err, 500)
-		}
+	httpError = callAfterCreateHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
 	context.Response.Data = ptr
 	return nil
@@ -110,24 +87,9 @@ func (Handler) BatchCreate(context *Context) *Error {
 
 	for i := 0; i < object.Len(); i++ {
 		var v = object.Index(i).Addr().Interface()
-		if obj, ok := v.(interface{ OnBeforeCreate(context *Context) error }); ok {
-			err := obj.OnBeforeCreate(context)
-			if err != nil {
-				return context.Error(err, 500)
-			}
-		}
-		if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
-			if err := obj.OnBeforeSave(context); err != nil {
-				return context.Error(err, 500)
-			}
-		}
-		if obj, ok := v.(interface{ ValidateCreate(context *Context) error }); ok {
-			if err := obj.ValidateCreate(context); err != nil {
-				return context.Error(err, 412)
-			}
-		}
-		if !context.Validate(v) {
-			return nil
+		httpError := callBeforeCreateHook(v, context)
+		if httpError != nil {
+			return httpError
 		}
 		context.applyOverrides(object.Index(i))
 	}
@@ -138,16 +100,13 @@ func (Handler) BatchCreate(context *Context) *Error {
 
 	for i := 0; i < object.Len(); i++ {
 		var v = object.Index(i).Addr().Interface()
-		if obj, ok := v.(interface{ OnAfterCreate(context *Context) error }); ok {
-			if err := obj.OnAfterCreate(context); err != nil {
-				return context.Error(err, 500)
-			}
+		httpError := callAfterCreateHook(v, context)
+		if httpError != nil {
+			return httpError
 		}
-
-		if obj, ok := v.(interface{ OnAfterSave(context *Context) error }); ok {
-			if err := obj.OnAfterSave(context); err != nil {
-				return context.Error(err, 500)
-			}
+		httpError = callAfterGetHook(v, context)
+		if httpError != nil {
+			return httpError
 		}
 	}
 
@@ -183,43 +142,23 @@ func (Handler) Update(context *Context) *Error {
 	if err != nil {
 		return context.Error(err, 500)
 	}
-	if obj, ok := ptr.(interface{ OnBeforeUpdate(context *Context) error }); ok {
-		if err := obj.OnBeforeUpdate(context); err != nil {
-			return context.Error(err, 500)
-		}
+
+	httpError := callBeforeUpdateHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
 
-	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
-		if err := obj.OnBeforeSave(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
-	if obj, ok := ptr.(interface{ ValidateUpdate(context *Context) error }); ok {
-		if err := obj.ValidateUpdate(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
-	if !context.Validate(ptr) {
-		return nil
-	}
 	context.applyOverrides(object)
 	//evo.Dump(ptr)
 	if err := dbo.Debug().Omit(clause.Associations).Save(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
 
-	if obj, ok := ptr.(interface{ OnAfterUpdate(context *Context) error }); ok {
-		if err := obj.OnAfterUpdate(context); err != nil {
-			return context.Error(err, 500)
-		}
+	httpError = callAfterUpdateHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
-	if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
-		if err := obj.OnAfterSave(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
+
 	context.Response.Data = ptr
 
 	return nil
@@ -250,28 +189,10 @@ func (Handler) BatchUpdate(context *Context) *Error {
 		}
 	}
 
-	if obj, ok := ptr.(interface{ OnBeforeUpdate(context *Context) error }); ok {
-		if err := obj.OnBeforeUpdate(context); err != nil {
-			return context.Error(err, 500)
-		}
+	httpError := callBeforeUpdateHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
-
-	if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
-		if err := obj.OnBeforeSave(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
-	if obj, ok := ptr.(interface{ ValidateUpdate(context *Context) error }); ok {
-		if err := obj.ValidateUpdate(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
-	//TODO: validate
-	/*	if !context.Validate(ptr) {
-		return nil
-	}*/
 
 	context.applyOverrides(object)
 	query.Debug().Omit(clause.Associations).Where("1=1").Updates(ptr)
@@ -282,22 +203,15 @@ func (Handler) BatchUpdate(context *Context) *Error {
 
 		for i := 0; i < slice.Len(); i++ {
 			var v = slice.Index(i).Addr().Interface()
-			if obj, ok := v.(interface{ OnAfterUpdate(context *Context) error }); ok {
-				if err := obj.OnAfterUpdate(context); err != nil {
-					return context.Error(err, 500)
-				}
+			httpError = callAfterUpdateHook(v, context)
+
+			if httpError != nil {
+				return context.Error(err, 500)
 			}
 
-			if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
-				if err := obj.OnAfterSave(context); err != nil {
-					return context.Error(err, 500)
-				}
-			}
-
-			if obj, ok := v.(interface{ OnAfterGet(context *Context) error }); ok {
-				if err := obj.OnAfterGet(context); err != nil {
-					return context.Error(err, 500)
-				}
+			httpError = callAfterGetHook(v, context)
+			if httpError != nil {
+				return context.Error(err, 500)
 			}
 		}
 	}
@@ -326,10 +240,10 @@ func (Handler) Delete(context *Context) *Error {
 	if !key {
 		return &ErrorObjectNotExist
 	}
-	if obj, ok := ptr.(interface{ OnBeforeDelete(context *Context) error }); ok {
-		if err := obj.OnBeforeDelete(context); err != nil {
-			return context.Error(err, 500)
-		}
+
+	httpError := callBeforeDeleteHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
 
 	// Try soft-delete
@@ -344,10 +258,9 @@ func (Handler) Delete(context *Context) *Error {
 		}
 	}
 
-	if obj, ok := ptr.(interface{ OnAfterDelete(context *Context) error }); ok {
-		if err := obj.OnAfterDelete(context); err != nil {
-			return context.Error(err, 500)
-		}
+	httpError = callAfterDeleteHook(ptr, context)
+	if httpError != nil {
+		return httpError
 	}
 
 	return nil
@@ -378,13 +291,9 @@ func (Handler) All(context *Context) *Error {
 	context.Response.Total = int64(slice.Len())
 	context.Response.Size = slice.Len()
 
-	if _, ok := context.CreateIndirectObject().Addr().Interface().(interface{ OnAfterGet(context *Context) error }); ok {
-		for i := 0; i < slice.Len(); i++ {
-			if obj, ok := slice.Index(i).Addr().Interface().(interface{ OnAfterGet(context *Context) error }); ok {
-				if err := obj.OnAfterGet(context); err != nil {
-					return context.Error(err, 500)
-				}
-			}
+	for i := 0; i < slice.Len(); i++ {
+		if httpError := callAfterGetHook(slice.Index(i).Addr().Interface(), context); httpError != nil {
+			return httpError
 		}
 	}
 
@@ -430,15 +339,13 @@ func (Handler) Paginate(context *Context) *Error {
 	if err := query.Limit(p.Limit).Offset(p.GetOffset()).Find(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
-	if _, ok := context.CreateIndirectObject().Addr().Interface().(interface{ OnAfterGet(context *Context) error }); ok {
-		for i := 0; i < slice.Len(); i++ {
-			if obj, ok := slice.Index(i).Addr().Interface().(interface{ OnAfterGet(context *Context) error }); ok {
-				if err := obj.OnAfterGet(context); err != nil {
-					return context.Error(err, 500)
-				}
-			}
+
+	for i := 0; i < slice.Len(); i++ {
+		if httpError := callAfterGetHook(slice.Index(i).Addr().Interface(), context); httpError != nil {
+			return httpError
 		}
 	}
+
 	context.Response.Data = ptr
 	context.SetResponse(ptr)
 	return nil
@@ -455,31 +362,19 @@ func (Handler) Get(context *Context) *Error {
 		return &ErrorPermissionDenied
 	}
 
-	if obj, ok := obj.Addr().Interface().(interface{ OnBeforeGet(context *Context) error }); ok {
-		if err := obj.OnBeforeGet(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-
 	object := context.CreateIndirectObject()
 	ptr := object.Addr().Interface()
-	if obj, ok := ptr.(interface{ OnBeforeGet(context *Context) error }); ok {
-		if err := obj.OnBeforeGet(context); err != nil {
-			return context.Error(err, 500)
-		}
-	}
-	key, err := context.FindByPrimaryKey(ptr)
+
+	exits, err := context.FindByPrimaryKey(ptr)
 	if err != nil {
 		return err
 	}
-	if !key {
+	if !exits {
 		return &ErrorObjectNotExist
 	}
 
-	if obj, ok := ptr.(interface{ OnAfterGet(context *Context) error }); ok {
-		if err := obj.OnAfterGet(context); err != nil {
-			return context.Error(err, 500)
-		}
+	if httpError := callAfterGetHook(ptr, context); httpError != nil {
+		return httpError
 	}
 
 	context.Response.Data = ptr
@@ -559,19 +454,19 @@ func (h Handler) Set(context *Context) *Error {
 		}
 		if !exists {
 			var ptr = loaderItem.Addr().Interface()
-			if obj, ok := ptr.(interface{ OnBeforeDelete(context *Context) error }); ok {
-				if err := obj.OnBeforeDelete(context); err != nil {
-					return context.Error(err, 500)
-				}
+
+			httpError := callBeforeDeleteHook(ptr, context)
+			if httpError != nil {
+				return context.Error(err, 500)
 			}
+
 			if err := dbo.Debug().Unscoped().Delete(ptr).Error; err != nil {
 				return context.Error(err, 500)
 			}
 
-			if obj, ok := ptr.(interface{ OnAfterDelete(context *Context) error }); ok {
-				if err := obj.OnAfterDelete(context); err != nil {
-					return context.Error(err, 500)
-				}
+			httpError = callAfterDeleteHook(ptr, context)
+			if httpError != nil {
+				return httpError
 			}
 
 		}
@@ -589,17 +484,9 @@ func (h Handler) Set(context *Context) *Error {
 		}
 		if !exists {
 			var ptr = inputItem.Addr().Interface()
-			if obj, ok := ptr.(interface{ OnBeforeCreate(context *Context) error }); ok {
-				err := obj.OnBeforeCreate(context)
-				if err != nil {
-					return context.Error(err, 500)
-				}
-			}
-
-			if obj, ok := ptr.(interface{ OnBeforeSave(context *Context) error }); ok {
-				if err := obj.OnBeforeSave(context); err != nil {
-					return context.Error(err, 500)
-				}
+			httpError := callBeforeCreateHook(ptr, context)
+			if httpError != nil {
+				return context.Error(err, 500)
 			}
 
 			if obj, ok := ptr.(interface{ ValidateCreate(context *Context) error }); ok {
@@ -610,29 +497,19 @@ func (h Handler) Set(context *Context) *Error {
 			context.applyOverrides(inputItem)
 			dbo.Debug().Create(inputItem.Addr().Interface())
 
-			if obj, ok := ptr.(interface{ OnAfterCreate(context *Context) error }); ok {
-				if err := obj.OnAfterCreate(context); err != nil {
-					return context.Error(err, 500)
-				}
-			}
-
-			if obj, ok := ptr.(interface{ OnAfterSave(context *Context) error }); ok {
-				if err := obj.OnAfterSave(context); err != nil {
-					return context.Error(err, 500)
-				}
+			httpError = callAfterCreateHook(ptr, context)
+			if httpError != nil {
+				return context.Error(err, 500)
 			}
 		}
 	}
 
 	if context.Request.Query("return").String() != "" {
 		query.Debug().Unscoped().Find(loaderPtr)
-
 		for i := 0; i < loader.Len(); i++ {
 			var v = loader.Index(i).Addr().Interface()
-			if obj, ok := v.(interface{ OnAfterGet(context *Context) error }); ok {
-				if err := obj.OnAfterGet(context); err != nil {
-					return context.Error(err, 500)
-				}
+			if httpError := callAfterGetHook(v, context); httpError != nil {
+				return httpError
 			}
 		}
 		context.Response.Data = loader.Interface()

@@ -51,3 +51,26 @@ func (article *Article) RestPermission(permissions restify.Permissions, context 
     return true
 }
 ```
+
+
+### Custom Validation Errors
+
+The `AddValidationErrors` function lets you throw validation errors as endpoint response.
+
+```golang
+func (app App) Register() error {
+    //global hooks
+    restify.OnBeforeSave(func(obj any, c *restify.Context) error {
+        if user, ok := obj.(*User); ok {
+			if user.Username == "unallowed" {
+                c.AddValidationErrors(fmt.Errorf("this username is not allowed"))
+                return fmt.Errorf("validation error")
+            }
+        }
+		
+        return nil
+    })
+	
+    return nil
+}
+```

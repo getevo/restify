@@ -3,7 +3,7 @@ module github.com/getevo/restify
 go 1.22
 
 require (
-	github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92
+	github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c
 	github.com/getevo/postman v0.0.0-20240821202756-0e5fab66b666
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/iancoleman/strcase v0.3.0

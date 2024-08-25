@@ -41,6 +41,7 @@ func (app App) WhenReady() error {
 		var model = schema.Models[idx]
 		UseModel(model.Sample)
 	}
+	app.registerHooks()
 	var controller Controller
 	for idx, _ := range resources {
 		for i, _ := range resources[idx].Actions {
