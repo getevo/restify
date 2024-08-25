@@ -119,10 +119,7 @@ func (res *Resource) SetAction(action *Endpoint) {
 			}
 			req.Body.Raw = PrettyJson(data)
 		} else {
-			var data []any
-			for i := 0; i < 3; i++ {
-				data = append(data, ModelDataFaker(res.Schema))
-			}
+			var data = ModelDataFaker(res.Schema)
 			req.Body.Raw = PrettyJson(data)
 		}
 
