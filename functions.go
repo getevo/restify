@@ -67,7 +67,19 @@ func UseModel(model any) *Resource {
 			Description: "set objects in database",
 		})
 	}
-
+	if !features.DisableAggregate {
+		resource.SetAction(&Endpoint{
+			Name:        "AGGREGATE",
+			Method:      MethodGET,
+			URL:         "/aggregate",
+			PKUrl:       false,
+			Handler:     handler.Aggregate,
+			AcceptData:  false,
+			Batch:       false,
+			Filterable:  true,
+			Description: "generate aggregate data",
+		})
+	}
 	if !features.DisableList {
 		resource.SetAction(&Endpoint{
 			Name:        "ALL",
@@ -98,6 +110,7 @@ func UseModel(model any) *Resource {
 			Description: "get single object using primary key",
 		})
 	}
+
 	if !features.DisableCreate {
 		resource.SetAction(&Endpoint{
 			Name:        "CREATE",

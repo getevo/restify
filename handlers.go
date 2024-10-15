@@ -1,11 +1,17 @@
 package restify
 
 import (
+	"fmt"
+	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm/clause"
+	"regexp"
+	"strings"
 )
 
 type Handler struct {
 }
+
+var columnNameRegex = regexp.MustCompile(`^\w+$`)
 
 func (Handler) ModelInfo(context *Context) *Error {
 	if !context.RestPermission(PermissionsModelInfo, context.CreateIndirectObject()) {
@@ -516,5 +522,80 @@ func (h Handler) Set(context *Context) *Error {
 		return nil
 	}
 	context.Response.Data = nil
+	return nil
+}
+
+var aggregateRegex = regexp.MustCompile(`(?mi)([a-z0-9_*\-]+)\.(count|sum|min|max|avg|first|last)`)
+
+func (h Handler) Aggregate(context *Context) *Error {
+	if !context.RestPermission(PermissionAggregate, context.CreateIndirectObject()) {
+		return &ErrorPermissionDenied
+	}
+
+	object := context.CreateIndirectObject()
+	ptr := object.Addr().Interface()
+
+	var query = context.GetDBO().Model(ptr)
+	var httpErr *Error
+	query, httpErr = context.ApplyFilters(query)
+	if httpErr != nil {
+		return httpErr
+	}
+
+	var fieldsInput = context.Request.Query("fields").String()
+	if fieldsInput == "" {
+		httpErr = &Error{
+			Code:    400,
+			Message: "fields parameter is required",
+		}
+		return httpErr
+	}
+	var fields = strings.Split(fieldsInput, ",")
+	var _select = ""
+	for _, item := range fields {
+		match := aggregateRegex.FindStringSubmatch(item)
+		if len(match) == 3 {
+			fieldName := match[1]
+			funcName := strings.ToUpper(match[2])
+			var alias = fieldName + "." + strings.ToLower(funcName)
+			if fieldName != "*" {
+				fieldName = "`" + fieldName + "`"
+			}
+			_select += "," + fmt.Sprintf("%s(%s) AS `%s`", funcName, fieldName, alias)
+		}
+	}
+	if len(_select) > 0 {
+		_select = _select[1:]
+		query = query.Select(_select)
+	} else {
+		httpErr = &Error{
+			Code:    400,
+			Message: "fields parameter should contain aggregate functions field_name.aggregate_function",
+		}
+		return httpErr
+	}
+
+	var groupByInput = context.Request.Query("group_by").String()
+
+	if columnNameRegex.MatchString(groupByInput) {
+		query = query.Group(groupByInput)
+		query = query.Select(_select, groupByInput)
+
+		var result []map[string]interface{}
+		if err := query.Scan(&result).Error; err != nil {
+			log.Error(err)
+			return context.Error(fmt.Errorf("unable to execute aggregate query"), 500)
+		}
+		context.Response.Data = result
+	} else {
+
+		var result map[string]interface{}
+		if err := query.Scan(&result).Error; err != nil {
+			log.Error(err)
+			return context.Error(fmt.Errorf("unable to execute aggregate query"), 500)
+		}
+		context.Response.Data = result
+	}
+
 	return nil
 }

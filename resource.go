@@ -42,6 +42,7 @@ const (
 	PermissionBatchDelete    Permission = "BATCH+DELETE"
 	PermissionViewGet        Permission = "VIEW+GET"
 	PermissionViewAll        Permission = "VIEW+ALL"
+	PermissionAggregate      Permission = "VIEW+AGGREGATE"
 	PermissionViewPagination Permission = "VIEW+PAGINATION"
 	PermissionSet            Permission = "SET"
 )
