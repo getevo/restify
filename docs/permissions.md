@@ -90,6 +90,7 @@ The `permissions.Has` method is used to check whether the current action being p
 - `permissions.Has("BATCH")`: Checks if the user has permission to perform batch operations.
 - `permissions.Has("CREATE")`: Checks if the user has permission to create new records.
 - `permissions.Has("SET")`: Checks if the user has permission to use the set operation.
+- `permissions.Has("AGGREGATE")`: Checks if the user has permission to use the aggregate operation.
 
 By using these checks, you can enforce fine-grained access control within your Restify application, ensuring that users can only perform actions that they are authorized to do.
 

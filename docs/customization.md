@@ -109,15 +109,15 @@ type User struct {
 
 You may turn on or off some Restify endpoints. The following table outlines the available options:
 
-| **Feature**             | **Description**                           |
-|-------------------------|-------------------------------------------|
-| `restify.API`           | Enable Restify Endpoint API               |
-| `restify.DisableCreate` | Disable create and batch create endpoints |
-| `restify.DisableUpdate` | Disable update and batch update endpoints |
-| `restify.DisableSet`    | Disable set endpoint                      |
-| `restify.DisableList`   | Disable data listing API endpoints        |
-| `restify.DisableDelete` | Disable single and batch delete endpoints |
-
+| **Feature**                | **Description**                           |
+|----------------------------|-------------------------------------------|
+| `restify.API`              | Enable Restify Endpoint API               |
+| `restify.DisableCreate`    | Disable create and batch create endpoints |
+| `restify.DisableUpdate`    | Disable update and batch update endpoints |
+| `restify.DisableSet`       | Disable set endpoint                      |
+| `restify.DisableList`      | Disable data listing API endpoints        |
+| `restify.DisableDelete`    | Disable single and batch delete endpoints |
+| `restify.DisableAggregate` | Disable aggregate endpoint                |
 ##### Example
 
 ```golang
