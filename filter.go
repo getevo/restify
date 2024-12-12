@@ -49,7 +49,7 @@ const (
 //   - [asc|desc] represents either the word "asc" or "desc"
 //
 // The regular expression is case-insensitive and accepts leading and trailing whitespace characters.
-var orderRegex = regexp.MustCompile(`(?mi)\s*[a-zA-Z0-9-_]+\s+(asc|desc)\s*`)
+var orderRegex = regexp.MustCompile(`(?mi)^[a-zA-Z0-9-_]+.(asc|desc)$`)
 
 // result will be [{"column":"column1","condition":"condition1","value":"value1"},{"column":"column2","condition":"condition2","value":"value2"},{"column":"column3","condition":"condition
 func filterRegEx(str string) []map[string]string {
