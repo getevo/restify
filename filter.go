@@ -148,7 +148,6 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	}
 
 	var order = context.Request.Query("order").String()
-	fmt.Println(order, "=>", parseOrderBy(order))
 	if order != "" {
 		query = query.Order(parseOrderBy(order))
 	}
