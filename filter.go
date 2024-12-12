@@ -49,7 +49,7 @@ const (
 //   - [asc|desc] represents either the word "asc" or "desc"
 //
 // The regular expression is case-insensitive and accepts leading and trailing whitespace characters.
-var orderRegex = regexp.MustCompile(`(?mi)^[a-zA-Z0-9-_]+.(asc|desc)$`)
+var orderRegex = regexp.MustCompile(`(?mi)^([a-zA-Z0-9-_])+.(asc|desc)$`)
 
 // result will be [{"column":"column1","condition":"condition1","value":"value1"},{"column":"column2","condition":"condition2","value":"value2"},{"column":"column3","condition":"condition
 func filterRegEx(str string) []map[string]string {
@@ -149,16 +149,7 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 
 	var order = context.Request.Query("order").String()
 	if order != "" {
-		valid := true
-		for _, item := range strings.Split(order, ",") {
-			if !orderRegex.MatchString(item) {
-				valid = false
-				break
-			}
-		}
-		if valid {
-			query = query.Order(order)
-		}
+		query = query.Preload(parseOrderBy(order))
 	}
 
 	var fields = context.Request.Query("fields").String()
@@ -186,4 +177,56 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 		query = query.Limit(limit)
 	}
 	return query, httpErr
+}
+
+func orderNormalizer(input string) string {
+	// Split the input string into parts using the dot separator
+	parts := strings.Split(input, ".")
+
+	if len(parts) < 2 {
+		return "Invalid input"
+	}
+
+	// Get the column name and order (case-insensitive for ASC/DESC)
+	columnName := strings.Join(parts[:len(parts)-1], ".") // Join all but the last part as column name
+	order := strings.ToUpper(parts[len(parts)-1])         // Last part is the order, converted to uppercase
+
+	// Ensure order is valid
+	if order != "ASC" && order != "DESC" {
+		return "Invalid input"
+	}
+
+	return fmt.Sprintf("%s %s", columnName, order)
+}
+
+func parseOrderBy(input string) string {
+	// Split by comma to process each order by clause individually
+	clauses := strings.Split(input, ",")
+	for i, cl := range clauses {
+		cl = strings.TrimSpace(cl)
+		// Split by dot to isolate column and asc/desc
+		parts := strings.Split(cl, ".")
+		if len(parts) < 2 {
+			// If no dot found, just return it as is (or handle error)
+			continue
+		}
+
+		// The last part should be asc or desc (in any case)
+		order := parts[len(parts)-1]
+		// The column is everything before the last part joined by '.'
+		column := strings.Join(parts[:len(parts)-1], ".")
+
+		// Normalize order direction to uppercase
+		order = strings.ToUpper(order)
+		// Check if order is something other than ASC or DESC,
+		// if so, default to ASC (or handle error)
+		if order != "ASC" && order != "DESC" {
+			order = "ASC" // default/fallback
+		}
+
+		clauses[i] = fmt.Sprintf("%s %s", column, order)
+	}
+
+	// Join all processed clauses with a comma
+	return strings.Join(clauses, ",")
 }
