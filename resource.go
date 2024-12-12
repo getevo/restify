@@ -484,7 +484,7 @@ type Info struct {
 // FindByPrimaryKey is a method that searches for a record in the database based on the primary key values provided.
 // The method takes an input parameter, which can be a struct or a
 func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
-	var dbo = context.GetDBO().Debug()
+	var dbo = context.GetDBO()
 	var association = context.Request.Query("associations").String()
 	if association != "" {
 		if association == "1" || association == "true" {
@@ -523,7 +523,7 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	dbo, httpErr = filterMapper(context.Request.QueryString(), context, dbo)
 	dbo = dbo.Where(strings.Join(where, " AND "), params...)
 
-	return dbo.Debug().Take(input).RowsAffected != 0, httpErr
+	return dbo.Take(input).RowsAffected != 0, httpErr
 }
 
 func getAssociations(prefix string, s *schema.Schema, loaded ...string) []string {

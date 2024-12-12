@@ -123,7 +123,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 	for _, condition := range context.Conditions {
 		query = query.Where(fmt.Sprintf("`%s` %s ?", condition.Field, condition.Op), condition.Value)
 	}
-	query = query.Debug()
+	//query = query.Debug()
 	return query, nil
 }
 
@@ -148,8 +148,9 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	}
 
 	var order = context.Request.Query("order").String()
+	fmt.Println(order, "=>", parseOrderBy(order))
 	if order != "" {
-		query = query.Preload(parseOrderBy(order))
+		query = query.Order(parseOrderBy(order))
 	}
 
 	var fields = context.Request.Query("fields").String()

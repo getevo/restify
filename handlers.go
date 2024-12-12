@@ -156,7 +156,7 @@ func (Handler) Update(context *Context) *Error {
 
 	context.applyOverrides(object)
 	//evo.Dump(ptr)
-	if err := dbo.Debug().Omit(clause.Associations).Save(ptr).Error; err != nil {
+	if err := dbo.Omit(clause.Associations).Save(ptr).Error; err != nil {
 		return context.Error(err, 500)
 	}
 
@@ -201,7 +201,7 @@ func (Handler) BatchUpdate(context *Context) *Error {
 	}
 
 	context.applyOverrides(object)
-	query.Debug().Omit(clause.Associations).Where("1=1").Updates(ptr)
+	query.Omit(clause.Associations).Where("1=1").Updates(ptr)
 	if context.Request.Query("return").String() != "" {
 		var slice = context.CreateIndirectSlice()
 		ptr = slice.Addr().Interface()
@@ -396,7 +396,7 @@ func (h Handler) BatchDelete(context *Context) *Error {
 		return &ErrorPermissionDenied
 	}
 
-	var query = context.GetDBO().Model(ptr).Debug()
+	var query = context.GetDBO().Model(ptr)
 	var httpErr *Error
 	query, httpErr = context.ApplyFilters(query)
 	if httpErr != nil {
@@ -410,7 +410,7 @@ func (h Handler) BatchDelete(context *Context) *Error {
 		}
 	}
 
-	query.Debug().Omit(clause.Associations).Delete(ptr)
+	query.Omit(clause.Associations).Delete(ptr)
 
 	return nil
 }
@@ -466,7 +466,7 @@ func (h Handler) Set(context *Context) *Error {
 				return context.Error(err, 500)
 			}
 
-			if err := dbo.Debug().Unscoped().Delete(ptr).Error; err != nil {
+			if err := dbo.Unscoped().Delete(ptr).Error; err != nil {
 				return context.Error(err, 500)
 			}
 
@@ -501,7 +501,7 @@ func (h Handler) Set(context *Context) *Error {
 				}
 			}
 			context.applyOverrides(inputItem)
-			dbo.Debug().Create(inputItem.Addr().Interface())
+			dbo.Create(inputItem.Addr().Interface())
 
 			httpError = callAfterCreateHook(ptr, context)
 			if httpError != nil {
@@ -511,7 +511,7 @@ func (h Handler) Set(context *Context) *Error {
 	}
 
 	if context.Request.Query("return").String() != "" {
-		query.Debug().Unscoped().Find(loaderPtr)
+		query.Unscoped().Find(loaderPtr)
 		for i := 0; i < loader.Len(); i++ {
 			var v = loader.Index(i).Addr().Interface()
 			if httpError := callAfterGetHook(v, context); httpError != nil {
