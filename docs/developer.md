@@ -341,29 +341,73 @@ curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/batch?nam
 
 ## Built-In Validators and Error Messages
 
-RESTify supports a wide range of built-in validators. Below is a table of possible validators and their corresponding error messages:
+RESTify supports a wide range of built-in validators using [Validation Library](https://github.com/getevo/evo/blob/master/docs/validation.md). Below is a table of possible validators and their corresponding error messages:
 
-### **Non-Database Validators**
+# Validators and Error Messages
 
-| Validator         | Description                                       | Example Usage              | Possible Error Message                  |
-|-------------------|---------------------------------------------------|----------------------------|-----------------------------------------|
-| `required`        | Value cannot be empty.                            | `validation:"required"`    | `is required`                          |
-| `email`           | Checks for a valid email format.                  | `validation:"email"`       | `invalid email`                        |
-| `regex(...)`      | Matches value against a custom regex.             | `validation:"regex(...)"`  | `format is not valid`                  |
-| `len<, len>, ...` | Compares string length.                           | `validation:"len>5"`       | `is too long` / `is too short`         |
-| `alpha`           | Only alphabetical characters allowed.             | `validation:"alpha"`       | `is not alpha`                         |
-| `numeric`         | Only numeric values allowed.                      | `validation:"numeric"`     | `is not numeric`                       |
-| `password(...)`   | Checks password complexity.                       | `validation:"password(...)"` | `password is not complex enough`   |
+## Non-Database Validators
+
+These validators operate on input data without interacting with the database.
+
+| Validator            | Description                                    | Possible Error Message                                         |
+|----------------------|------------------------------------------------|---------------------------------------------------------------|
+| `text`               | Ensures string contains no HTML tags.          | `the text cannot contains html fields`                       |
+| `name`               | Checks if the value is a valid name.           | `is not valid name`                                          |
+| `alpha`              | Only alphabetical characters allowed.          | `is not alpha`                                               |
+| `latin`              | Only Unicode letters allowed.                  | `is not latin`                                               |
+| `digit`              | Only digits [0-9] allowed.                     | `invalid digit value`                                        |
+| `alphanumeric`       | Letters, digits, and spaces allowed.           | `is not alpha`                                               |
+| `required`           | Value cannot be empty.                         | `is required`                                                |
+| `email`              | Checks for valid email format.                 | `invalid email`                                              |
+| `regex(...)`         | Matches value against a regex pattern.         | `format is not valid`                                        |
+| `len<, len>, ...`    | Ensures string length within constraints.      | `is too short` / `is too long` / `is not equal to <length>`  |
+| Numeric comparisons  | Compares numeric values (`>`, `<`, etc.).      | `is bigger than ...` / `is smaller than ...`                 |
+| `int`, `+int`, `-int`| Checks if the value is integer.                | `invalid integer`                                            |
+| `float`, `+float`, `-float` | Checks if the value is float.          | `invalid integer`                                            |
+| `password(...)`      | Checks password complexity.                    | `password is not complex enough`                             |
+| `domain`             | Valid domain format.                           | `invalid domain`                                             |
+| `url`                | Valid URL format.                              | `invalid URL`                                                |
+| `ip`, `ip4`, `ip6`   | Valid IP address (IPv4 or IPv6).               | `value must be valid IPv4/IPv6 address`                      |
+| `cidr`               | Valid CIDR notation.                           | `value must be valid CIDR notation`                          |
+| `mac`                | Valid MAC address.                             | `value must be valid MAC address`                            |
+| `date`               | Valid RFC3339 date.                            | `invalid date, date expected be in RFC3339 format`           |
+| `longitude`          | Valid longitude.                               | `value must be valid longitude`                              |
+| `latitude`           | Valid latitude.                                | `value must be valid latitude`                               |
+| `port`               | Valid port number.                             | `value must be valid port number`                            |
+| `json`               | Valid JSON format.                             | `value must be valid JSON format`                            |
+| `ISBN`, `ISBN10`, `ISBN13` | Valid ISBN format.                      | `value must be ISBN-10 format` / `value must be ISBN-13 format` |
+| `creditcard`         | Valid credit card number.                      | `value must be credit card number`                           |
+| `uuid`               | Valid UUID.                                    | `value must be valid uuid`                                   |
+| `uppercase`          | Ensures string is uppercase.                   | `value must be in upper case`                                |
+| `lowercase`          | Ensures string is lowercase.                   | `value must be in lower case`                                |
+| `rgbcolor`, `rgba`, `hexcolor`, `hex` | Validates color formats.      | `value must be HEX color` / `value must be RGB color`        |
+| `countryalpha2`, `countryalpha3` | Valid ISO country codes.           | `value must be a valid ISO3166 Alpha 2/3 Format`             |
+| `btcaddress`         | Valid Bitcoin address.                         | `value must be a valid Bitcoin address`                      |
+| `ethaddress`         | Valid Ethereum address.                        | `value must be a valid ETH address`                          |
+| `cron`               | Valid CRON expression.                         | `value must be a valid CRON format`                          |
+| `duration`           | Valid Go duration format.                      | `value must be a valid duration format`                      |
+| `time`               | Valid RFC3339 timestamp.                       | `value must be a valid RFC3339 timestamp`                    |
+| `unixTimestamp`      | Valid Unix timestamp.                          | `value must be a valid unix timestamp`                       |
+| `timezone`           | Valid timezone string.                         | `value must be a valid timezone`                             |
+| `e164`               | Valid E164 phone number.                       | `value must be a valid E164 phone number`                    |
+| `safeHTML`           | Ensures string does not contain XSS tokens.    | `value must not contain any possible XSS tokens`             |
+| `noHTML`             | Ensures string does not contain HTML tags.     | `value must not contain any html tags`                       |
+| `phone`              | Valid phone number format.                     | `value must be valid phone number`                           |
 
 ---
 
-### **Database-Related Validators**
+## Database-Related Validators
 
-| Validator         | Description                                       | Example Usage              | Possible Error Message                  |
-|-------------------|---------------------------------------------------|----------------------------|-----------------------------------------|
-| `unique`          | Ensures the field value is unique in the table.   | `validation:"unique"`      | `duplicate entry`                      |
-| `fk`              | Ensures the field references a valid foreign key. | `validation:"fk"`          | `value does not match foreign key`     |
-| `enum`            | Ensures the value matches ENUM values in schema.  | `validation:"enum"`        | `invalid value, expected values are ...` |
+These validators validate input against database constraints.
+
+| Validator           | Description                                           | Possible Error Message                                    |
+|---------------------|-------------------------------------------------------|----------------------------------------------------------|
+| `unique`            | Ensures the field value is unique in the table.       | `duplicate entry`                                       |
+| `unique:col1\|col2` | Ensures a combination of columns is unique.           | `duplicate value for <columns>`                         |
+| `fk`                | Validates foreign key references another table.       | `value does not match foreign key`                      |
+| `enum`              | Ensures value matches an allowed ENUM value.          | `invalid value, expected values are: ...`               |
+| `before(field)`     | Ensures timestamp is before another field’s value.    | `<field> must be before <other field>`                  |
+| `after(field)`      | Ensures timestamp is after another field’s value.     | `<field> must be after <other field>`                   |
 
 ---
 
