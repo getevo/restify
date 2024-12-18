@@ -341,7 +341,7 @@ curl --location --request PATCH 'http://<your-server>/admin/rest/user/batch?name
 
 ## Built-In Validators and Error Messages
 
-RESTify supports a wide range of built-in validators using [Validation Library](https://github.com/getevo/evo/blob/master/docs/validation.md). Below is a table of possible validators and their corresponding error messages:
+RESTify supports a wide range of built-in validators leveraging [Validation Library](https://github.com/getevo/evo/blob/master/docs/validation.md). Below is a table of possible validators and their corresponding error messages:
 
 # Validators and Error Messages
 
