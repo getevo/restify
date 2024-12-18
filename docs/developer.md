@@ -200,4 +200,187 @@ Authorization: Bearer <token>
 
 ---
 
+## Validation in RESTify
+
+RESTify automatically validates input data based on the validation rules specified in the model's structure. If the input data fails validation, the API returns an error response with details about the failed validations.
+
+
+
+### API Validation Error Responses
+
+When a validation error occurs, the response includes a `validation_error` field containing details about the fields that failed validation and the specific error messages.
+
+### Example: Validation Error for Create API
+
+**Request**:
+```bash
+curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "",
+    "name": "reza",
+    "email": "reza@.dev"
+}'
+```
+
+**Response**:
+```json
+{
+    "data": 0,
+    "total": 0,
+    "offset": 0,
+    "total_pages": 0,
+    "current_page": 0,
+    "size": 0,
+    "success": false,
+    "error": "validation failed",
+    "type": "",
+    "validation_error": [
+        { "field": "username", "error": "is required" },
+        { "field": "email", "error": "invalid email reza@.dev" }
+    ]
+}
+```
+
+---
+
+### Validation Error Scenarios
+
+### **Create API Validation**
+If any field violates the validation rules during the creation of a single record, the API returns a `400 Bad Request` with the validation errors.
+
+### **Batch Create API Validation**
+When creating multiple records in a batch, the validation errors for each individual record are returned. The API proceeds with valid records and skips invalid ones.
+
+**Request**:
+```bash
+curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user/batch' \
+--header 'Content-Type: application/json' \
+--data '[
+    { "username": "user1", "name": "John", "email": "john@example.com" },
+    { "username": "", "name": "Reza", "email": "reza@.dev" }
+]'
+```
+
+**Response**:
+```json
+{
+    "data": [
+        { "username": "user1", "name": "John", "email": "john@example.com" }
+    ],
+    "success": false,
+    "error": "validation failed for some records",
+    "validation_error": [
+        {
+            "record": 2,
+            "errors": [
+                { "field": "username", "error": "is required" },
+                { "field": "email", "error": "invalid email reza@.dev" }
+            ]
+        }
+    ]
+}
+```
+
+---
+
+### **Update API Validation**
+For update operations, the API ensures that the new values meet the validation criteria. Errors are returned for any invalid fields.
+
+**Request**:
+```bash
+curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/1' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "invalid-email"
+}'
+```
+
+**Response**:
+```json
+{
+    "data": 0,
+    "success": false,
+    "error": "validation failed",
+    "validation_error": [
+        { "field": "email", "error": "invalid email invalid-email" }
+    ]
+}
+```
+
+---
+
+### **Batch Update API Validation**
+Similar to batch create, validation errors are returned for each invalid record during batch updates.
+
+**Request**:
+```bash
+curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/batch?name[eq]=John' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "not-an-email"
+}'
+```
+
+**Response**:
+```json
+{
+    "data": 0,
+    "success": false,
+    "error": "validation failed for some records",
+    "validation_error": [
+        {
+            "field": "email",
+            "error": "invalid email not-an-email"
+        }
+    ]
+}
+```
+
+---
+
+## Built-In Validators and Error Messages
+
+RESTify supports a wide range of built-in validators. Below is a table of possible validators and their corresponding error messages:
+
+### **Non-Database Validators**
+
+| Validator         | Description                                       | Example Usage              | Possible Error Message                  |
+|-------------------|---------------------------------------------------|----------------------------|-----------------------------------------|
+| `required`        | Value cannot be empty.                            | `validation:"required"`    | `is required`                          |
+| `email`           | Checks for a valid email format.                  | `validation:"email"`       | `invalid email`                        |
+| `regex(...)`      | Matches value against a custom regex.             | `validation:"regex(...)"`  | `format is not valid`                  |
+| `len<, len>, ...` | Compares string length.                           | `validation:"len>5"`       | `is too long` / `is too short`         |
+| `alpha`           | Only alphabetical characters allowed.             | `validation:"alpha"`       | `is not alpha`                         |
+| `numeric`         | Only numeric values allowed.                      | `validation:"numeric"`     | `is not numeric`                       |
+| `password(...)`   | Checks password complexity.                       | `validation:"password(...)"` | `password is not complex enough`   |
+
+---
+
+### **Database-Related Validators**
+
+| Validator         | Description                                       | Example Usage              | Possible Error Message                  |
+|-------------------|---------------------------------------------------|----------------------------|-----------------------------------------|
+| `unique`          | Ensures the field value is unique in the table.   | `validation:"unique"`      | `duplicate entry`                      |
+| `fk`              | Ensures the field references a valid foreign key. | `validation:"fk"`          | `value does not match foreign key`     |
+| `enum`            | Ensures the value matches ENUM values in schema.  | `validation:"enum"`        | `invalid value, expected values are ...` |
+
+---
+
+## Handling Validation Errors in Frontend
+
+1. **Display Validation Messages**:
+    - Parse the `validation_error` array in the response.
+    - Show user-friendly messages for each invalid field.
+
+2. **Highlight Invalid Fields**:
+    - Use the `field` name from the `validation_error` to identify and highlight the input.
+
+3. **Retry with Valid Data**:
+    - Correct the invalid fields and retry the API request.
+
+---
+
+By leveraging RESTify's validation capabilities, you can ensure robust data integrity and provide meaningful feedback to users during API interactions.
+
 This documentation provides a comprehensive guide for interacting with RESTify APIs. For further customization, consult your backend team.
