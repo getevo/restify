@@ -22,6 +22,7 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
   - [Select Specific Fields](./docs/endpoints.md#select-specific-fields)
   - [Postman Collection Generator](./docs/endpoints.md#postman-collection-generator)
   - [Example Postman Collection](./docs/endpoints.md#example-postman-collection)
+- **[Developers Integration Guide](./docs/developer.md)**
 - **[Customization](./docs/customization.md)**
   - [Model Hooks](./docs/customization.md#model-hooks)
   - [Global Hooks](./docs/customization.md#global-hooks)
