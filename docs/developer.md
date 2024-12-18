@@ -214,7 +214,7 @@ When a validation error occurs, the response includes a `validation_error` field
 
 **Request**:
 ```bash
-curl --location --request PUT 'http://your-server/admin/rest/user' \
+curl --location --request PUT 'http://<your-server>/admin/rest/user' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "username": "",
@@ -254,7 +254,7 @@ When creating multiple records in a batch, the validation errors for each indivi
 
 **Request**:
 ```bash
-curl --location --request PUT 'http://your-server/admin/rest/user/batch' \
+curl --location --request PUT 'http://<your-server>/admin/rest/user/batch' \
 --header 'Content-Type: application/json' \
 --data '[
     { "username": "user1", "name": "John", "email": "john@example.com" },
@@ -289,7 +289,7 @@ For update operations, the API ensures that the new values meet the validation c
 
 **Request**:
 ```bash
-curl --location --request PATCH 'http://your-server/admin/rest/user/1' \
+curl --location --request PATCH 'http://<your-server>/admin/rest/user/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "invalid-email"
@@ -315,7 +315,7 @@ Similar to batch create, validation errors are returned for each invalid record 
 
 **Request**:
 ```bash
-curl --location --request PATCH 'http://your-server/admin/rest/user/batch?name[eq]=John' \
+curl --location --request PATCH 'http://<your-server>/admin/rest/user/batch?name[eq]=John' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "not-an-email"
