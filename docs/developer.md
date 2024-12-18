@@ -184,7 +184,7 @@ curl --location 'http://<your-server>/admin/rest/user/paginate?page=1&size=5&ass
 
 ## 5. Authentication in RESTify
 
-RESTify may require authentication for API calls, depending on your application logic. Check with your backend team for specific authentication methods.
+Backend may require authentication for API calls, depending on your application logic. Check with your backend team for specific authentication methods.
 
 ### **API Token**
 Include the API key in the request header:
