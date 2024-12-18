@@ -214,12 +214,12 @@ When a validation error occurs, the response includes a `validation_error` field
 
 **Request**:
 ```bash
-curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user' \
+curl --location --request PUT 'http://your-server/admin/rest/user' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "username": "",
-    "name": "reza",
-    "email": "reza@.dev"
+    "name": "john",
+    "email": "john@.dev"
 }'
 ```
 
@@ -237,7 +237,7 @@ curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user' \
     "type": "",
     "validation_error": [
         { "field": "username", "error": "is required" },
-        { "field": "email", "error": "invalid email reza@.dev" }
+        { "field": "email", "error": "invalid email" }
     ]
 }
 ```
@@ -254,7 +254,7 @@ When creating multiple records in a batch, the validation errors for each indivi
 
 **Request**:
 ```bash
-curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user/batch' \
+curl --location --request PUT 'http://your-server/admin/rest/user/batch' \
 --header 'Content-Type: application/json' \
 --data '[
     { "username": "user1", "name": "John", "email": "john@example.com" },
@@ -275,7 +275,7 @@ curl --location --request PUT 'http://127.0.0.1:8080/admin/rest/user/batch' \
             "record": 2,
             "errors": [
                 { "field": "username", "error": "is required" },
-                { "field": "email", "error": "invalid email reza@.dev" }
+                { "field": "email", "error": "invalid email" }
             ]
         }
     ]
@@ -289,7 +289,7 @@ For update operations, the API ensures that the new values meet the validation c
 
 **Request**:
 ```bash
-curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/1' \
+curl --location --request PATCH 'http://your-server/admin/rest/user/1' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "invalid-email"
@@ -303,7 +303,7 @@ curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/1' \
     "success": false,
     "error": "validation failed",
     "validation_error": [
-        { "field": "email", "error": "invalid email invalid-email" }
+        { "field": "email", "error": "invalid email" }
     ]
 }
 ```
@@ -315,7 +315,7 @@ Similar to batch create, validation errors are returned for each invalid record 
 
 **Request**:
 ```bash
-curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/batch?name[eq]=John' \
+curl --location --request PATCH 'http://your-server/admin/rest/user/batch?name[eq]=John' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "not-an-email"
@@ -331,7 +331,7 @@ curl --location --request PATCH 'http://127.0.0.1:8080/admin/rest/user/batch?nam
     "validation_error": [
         {
             "field": "email",
-            "error": "invalid email not-an-email"
+            "error": "invalid email"
         }
     ]
 }
