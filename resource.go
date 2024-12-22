@@ -446,6 +446,9 @@ func (context *Context) Error(err error, code int) *Error {
 
 func (context *Context) GetDBO() *gorm.DB {
 	var dbo = evo.GetDBO()
+	if context.Request.Query("debug").String() == "restify" {
+		dbo = dbo.Debug()
+	}
 	if context.Request.Header("language") != "" {
 		dbo = db.Set("lang", context.Request.Header("language"))
 	} else {
