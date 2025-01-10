@@ -2,7 +2,6 @@ package restify
 
 import (
 	"fmt"
-	"github.com/getevo/evo/v2/lib/generic"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/url"
@@ -115,21 +114,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
 					return query, &err
 				}
-				d1, err := generic.Parse(valSlice[0]).Time()
-				if err != nil {
-					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected time got %v", valSlice[0]), 400)
-					return query, &err
-				}
-				d2, err := generic.Parse(valSlice[1]).Time()
-				if err != nil {
-					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected time got %v", valSlice[1]), 400)
-					return query, &err
-				}
-				if d1.After(d2) {
-					query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), d1, d2)
-				} else {
-					query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), d2, d1)
-				}
+				query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), valSlice[0], valSlice[1])
 
 			} else {
 				if v, ok := filterConditions[filter["condition"]]; ok {
