@@ -141,18 +141,20 @@ curl --location 'http://<your-server>/admin/rest/product/all?order=name.asc,unit
 ### **Filtering**
 RESTify provides flexible filters. Supported operators:
 
-| **Operator**  | **Description**                | **Example**                        |
-|---------------|--------------------------------|------------------------------------|
-| `eq`          | Equals                        | `name[eq]=Milk`                   |
-| `neq`         | Not Equals                    | `name[neq]=Milk`                  |
-| `gt`          | Greater Than                  | `unit_price[gt]=50`               |
-| `gte`         | Greater Than or Equal To      | `unit_price[gte]=50`              |
-| `lt`          | Less Than                     | `unit_price[lt]=100`              |
-| `lte`         | Less Than or Equal To         | `unit_price[lte]=100`             |
-| `contains`    | Contains                      | `name[contains]=Mil`              |
-| `in`          | In List                       | `name[in]=Milk,Bread`             |
-| `notnull`     | Is Not Null                   | `deleted_at[notnull]=1`           |
-| `isnull`      | Is Null                       | `deleted_at[isnull]=1`            |
+| **Operator** | **Description**          | **Example**                                             |
+|--------------|--------------------------|---------------------------------------------------------|
+| `eq`         | Equals                   | `name[eq]=Milk`                                         |
+| `neq`        | Not Equals               | `name[neq]=Milk`                                        |
+| `gt`         | Greater Than             | `unit_price[gt]=50`                                     |
+| `gte`        | Greater Than or Equal To | `unit_price[gte]=50`                                    |
+| `lt`         | Less Than                | `unit_price[lt]=100`                                    |
+| `lte`        | Less Than or Equal To    | `unit_price[lte]=100`                                   |
+| `contains`   | Contains                 | `name[contains]=Mil`                                    |
+| `search`     | Fulltext Search          | `name[search]=milk`                                     |
+| `in`         | In List                  | `name[in]=Milk,Bread`                                   |
+| `between`    | Between                  | `name[between]=2006-01-02 10:15:06,2006-02-02 00:00:00` |
+| `notnull`    | Is Not Null              | `deleted_at[notnull]=1`                                 |
+| `isnull`     | Is Null                  | `deleted_at[isnull]=1`                                  |
 
 ### **Example**
 ```bash

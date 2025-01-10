@@ -26,18 +26,20 @@ After registering a model, Restify will expose several default endpoints. These 
 
 The query parameters in the URL can be used to filter and manipulate the database query. The format `field1[operator]=value` allows you to compare a database field using the specified operator. Multiple query parameters can be mixed to refine your search.
 
-| **Operator**  | **Description**                            | **Example**                       |
-|---------------|--------------------------------------------|-----------------------------------|
-| `eq`          | Equals (`=`)                               | `field1[eq]=value`                |
-| `neq`         | Not equal (`!=`)                           | `field1[neq]=value`               |
-| `gt`          | Greater than (`>`)                         | `field1[gt]=value`                |
-| `lt`          | Less than (`<`)                            | `field1[lt]=value`                |
-| `gte`         | Greater than or equal to (`>=`)            | `field1[gte]=value`               |
-| `lte`         | Less than or equal to (`<=`)               | `field1[lte]=value`               |
-| `in`          | In list (`IN`)                             | `field1[in]=value1,value2,value3` |
-| `contains`    | Contains (`LIKE`)                          | `field1[contains]=partial_value`  |
-| `isnull`      | Is null (`IS NULL`)                        | `field1[isnull]=1`                |
-| `notnull`     | Is not null (`IS NOT NULL`)                | `field1[notnull]=1`               |
+| **Operator**  | **Description**                            | **Example**                                             |
+|---------------|--------------------------------------------|---------------------------------------------------------|
+| `eq`          | Equals (`=`)                               | `field1[eq]=value`                                      |
+| `neq`         | Not equal (`!=`)                           | `field1[neq]=value`                                     |
+| `gt`          | Greater than (`>`)                         | `field1[gt]=value`                                      |
+| `lt`          | Less than (`<`)                            | `field1[lt]=value`                                      |
+| `gte`         | Greater than or equal to (`>=`)            | `field1[gte]=value`                                     |
+| `lte`         | Less than or equal to (`<=`)               | `field1[lte]=value`                                     |
+| `in`          | In list (`IN`)                             | `field1[in]=value1,value2,value3`                       |
+| `between`    | Between                 | `name[between]=2006-01-02 10:15:06,2006-02-02 00:00:00` |
+| `contains`    | Contains (`LIKE`)                          | `field1[contains]=partial_value`                        |
+| `search`     | Fulltext Search          | `name[search]=milk`                                     |
+| `isnull`      | Is null (`IS NULL`)                        | `field1[isnull]=1`                                      |
+| `notnull`     | Is not null (`IS NOT NULL`)                | `field1[notnull]=1`                                     |
 
 For the pagination API, you can identify the page number using `page=n` and set the result size using `size=m`.
 
