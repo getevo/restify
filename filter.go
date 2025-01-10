@@ -114,7 +114,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
 					return query, &err
 				}
-				query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), valSlice[0], valSlice[1])
+				query = query.Where(fmt.Sprintf("`%s` BETWEEN ? AND ?", filter["column"]), valSlice[0], valSlice[1])
 
 			} else {
 				if v, ok := filterConditions[filter["condition"]]; ok {
