@@ -2,6 +2,7 @@ package restify
 
 import (
 	"fmt"
+	"github.com/getevo/evo/v2/lib/generic"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/url"
@@ -19,7 +20,8 @@ var filterConditions = map[string]string{
 	"lt":       "<",
 	"gte":      ">=",
 	"lte":      "<=",
-	"in":       "in",
+	"in":       "IN",
+	"between":  "BETWEEN",
 	"contains": "LIKE",
 	"isnull":   "IS NULL",
 	"notnull":  "IS NOT NULL",
@@ -38,17 +40,13 @@ var filterConditions = map[string]string{
 // This constant is used to indicate the is null operator in code logic.
 // InOperator represents the string
 const (
-	ContainOperator = "contains"
-	NotNullOperator = "notnull"
-	IsNullOperator  = "isnull"
-	InOperator      = "in"
+	ContainOperator        = "contains"
+	NotNullOperator        = "notnull"
+	IsNullOperator         = "isnull"
+	InOperator             = "in"
+	BetweenOperator        = "between"
+	FulltextSearchOperator = "search"
 )
-
-// orderRegex is a regular expression that matches strings in the format of "[field] [asc|desc]" where:
-//   - [field] represents a sequence of letters, numbers, hyphens, and underscores
-//   - [asc|desc] represents either the word "asc" or "desc"
-//
-// The regular expression is case-insensitive and accepts leading and trailing whitespace characters.
 
 var groupByRegex = regexp.MustCompile(`(?mi)^[a-z0-9_\-.,]+$`)
 
@@ -109,6 +107,30 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			} else if filter["condition"] == InOperator {
 				valSlice := strings.Split(filter["value"], ",")
 				query = query.Where(fmt.Sprintf("`%s` IN (?)", filter["column"]), valSlice)
+			} else if filter["condition"] == FulltextSearchOperator {
+				query = query.Where(fmt.Sprintf("MATCH (`%s`) AGAINST (? IN NATURAL LANGUAGE MODE)", filter["column"]), filter["value"])
+			} else if filter["condition"] == BetweenOperator {
+				valSlice := strings.Split(filter["value"], ",")
+				if len(valSlice) != 2 {
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
+					return query, &err
+				}
+				d1, err := generic.Parse(valSlice[0]).Time()
+				if err != nil {
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected time got %v", valSlice[0]), 400)
+					return query, &err
+				}
+				d2, err := generic.Parse(valSlice[1]).Time()
+				if err != nil {
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected time got %v", valSlice[1]), 400)
+					return query, &err
+				}
+				if d1.After(d2) {
+					query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), d1, d2)
+				} else {
+					query = query.Where(fmt.Sprintf("`%s` BETWEEN (?,?)", filter["column"]), d2, d1)
+				}
+
 			} else {
 				if v, ok := filterConditions[filter["condition"]]; ok {
 					query = query.Where(fmt.Sprintf("`%s` %s ?", filter["column"], v), filter["value"])
