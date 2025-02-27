@@ -43,6 +43,7 @@ const (
 	NotNullOperator        = "notnull"
 	IsNullOperator         = "isnull"
 	InOperator             = "in"
+	NotInOperator          = "notin"
 	BetweenOperator        = "between"
 	FulltextSearchOperator = "search"
 )
@@ -103,6 +104,9 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 		} else {
 			if filter["condition"] == ContainOperator {
 				query = query.Where(fmt.Sprintf("`%s` %s ?", filter["column"], "LIKE"), fmt.Sprintf("%%%s%%", filter["value"]))
+			} else if filter["condition"] == NotInOperator {
+				valSlice := strings.Split(filter["value"], ",")
+				query = query.Where(fmt.Sprintf("`%s` NOT IN (?)", filter["column"]), valSlice)
 			} else if filter["condition"] == InOperator {
 				valSlice := strings.Split(filter["value"], ",")
 				query = query.Where(fmt.Sprintf("`%s` IN (?)", filter["column"]), valSlice)
