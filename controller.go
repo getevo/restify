@@ -10,7 +10,7 @@ type Controller struct{}
 
 // ModelsHandler returns all registered models.
 func (c Controller) ModelsHandler(request *evo.Request) interface{} {
-	return resources
+	return Resources
 }
 
 func (c Controller) PostmanHandler(request *evo.Request) any {

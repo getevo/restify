@@ -31,7 +31,7 @@ func (Handler) ModelInfo(context *Context) *Error {
 			PK:      item.PrimaryKey,
 		})
 	}
-	info.Endpoints = resources[context.Action.Resource.Table].Actions
+	info.Endpoints = Resources[context.Action.Resource.Table].Actions
 	context.Response.Data = info
 	return nil
 }

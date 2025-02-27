@@ -174,7 +174,7 @@ func UseModel(model any) *Resource {
 		})
 	}
 
-	resources[resource.Table] = &resource
+	Resources[resource.Table] = &resource
 
 	return &resource
 }

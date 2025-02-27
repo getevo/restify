@@ -43,9 +43,9 @@ func (app App) WhenReady() error {
 	}
 	app.registerHooks()
 	var controller Controller
-	for idx, _ := range resources {
-		for i, _ := range resources[idx].Actions {
-			resources[idx].Actions[i].RegisterRouter()
+	for idx, _ := range Resources {
+		for i, _ := range Resources[idx].Actions {
+			Resources[idx].Actions[i].RegisterRouter()
 		}
 	}
 	evo.Get(Prefix+"/models", controller.ModelsHandler)

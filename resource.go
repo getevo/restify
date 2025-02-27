@@ -18,8 +18,8 @@ import (
 	"strings"
 )
 
-// resources is a map that holds a collection of *Resource objects.
-var resources = map[string]*Resource{}
+// Resources is a map that holds a collection of *Resource objects.
+var Resources = map[string]*Resource{}
 
 type Permission string
 type Permissions []string
@@ -263,7 +263,7 @@ func (action *Endpoint) GenerateDescription() string {
 	}
 
 	if action.Filterable {
-		description = append(description, "- Supports filterable resources. You can filter resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)")
+		description = append(description, "- Supports filterable Resources. You can filter Resources by using query parameters: `field[op]=value`. refer to [Query Parameters Explanation](https://github.com/getevo/restify/blob/master/docs/endpoints.md#query-parameters-explanation)")
 	}
 
 	if action.PKUrl {
