@@ -445,7 +445,7 @@ func (context *Context) Error(err error, code int) *Error {
 }
 
 func (context *Context) GetDBO() *gorm.DB {
-	var dbo = db.GetContext()
+	var dbo = db.GetContext(context)
 	return dbo
 }
 

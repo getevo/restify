@@ -7,6 +7,7 @@ import (
 	"github.com/getevo/evo/v2/lib/db"
 	"github.com/getevo/evo/v2/lib/db/schema"
 	"github.com/getevo/postman"
+	"gorm.io/gorm"
 	"math"
 )
 
@@ -21,6 +22,14 @@ func (app App) Register() error {
 	if !db.Enabled {
 		return fmt.Errorf("database is not enabled. restify plugin cannot be registered without a running database. please enable the database in your configuration file")
 	}
+	db.OnPrepareContext(func(db *gorm.DB, v interface{}) *gorm.DB {
+		if context, ok := v.(*Context); ok {
+			if context.Request.Query("debug").String() == "restify" {
+				db = db.Debug()
+			}
+		}
+		return db
+	})
 	collection = postman.NewCollection("Restify", "")
 
 	if postmanAuthType != "none" {
