@@ -1,6 +1,8 @@
 module example
 
-go 1.22.3
+go 1.23
+
+toolchain go1.23.5
 
 require github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c
 
