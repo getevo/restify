@@ -27,7 +27,13 @@ func (app App) Register() error {
 			if context.Request.Query("debug").String() == "restify" {
 				db = db.Debug()
 			}
+			if lang := context.Request.Header("language"); lang != "" {
+				db = db.Set("lang", lang)
+			} else if lang := context.Request.Cookie("l10n-language"); lang != "" {
+				db = db.Set("lang", lang)
+			}
 		}
+
 		return db
 	})
 	collection = postman.NewCollection("Restify", "")
