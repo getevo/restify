@@ -3,7 +3,7 @@ module github.com/getevo/restify
 go 1.23.5
 
 require (
-	github.com/getevo/evo/v2 v2.0.0-20250418122504-91f11afd17bc
+	github.com/getevo/evo/v2 v2.0.0-20250423071105-0d36122fe02f
 	github.com/getevo/postman v0.0.0-20240821202756-0e5fab66b666
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/iancoleman/strcase v0.3.0
@@ -40,7 +40,7 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.60.0 // indirect
+	github.com/valyala/fasthttp v1.61.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
