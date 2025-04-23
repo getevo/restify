@@ -84,7 +84,7 @@ func NewEntity(obj interface{}, request *evo.Request) (*Entity, error) {
 		},
 	}
 	entity.Context.DBO = db.GetContext(entity.Context, entity.Context.Request)
-	entity.Context.DBO = entity.Context.DBO.Model(entity.Context.Object.Interface())
+	entity.Context.DBO = entity.Context.DBO.Model(find.Sample)
 
 	return entity, nil
 }
