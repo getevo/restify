@@ -73,10 +73,10 @@ func NewEntity(obj interface{}, request *evo.Request) (*Entity, error) {
 	if ref.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("invalid entity type %T", obj)
 	}
-	var name = ref.Type().Name()
-	find := schema.Find(name)
+
+	find := schema.Find(obj)
 	if find == nil {
-		return nil, fmt.Errorf("invalid entity %s", name)
+		return nil, fmt.Errorf("invalid entity %v", obj)
 	}
 	var entity = &Entity{Schema: find}
 	entity.Context = &Context{
