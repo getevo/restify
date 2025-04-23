@@ -175,6 +175,7 @@ type Filter struct {
 // the sample data, the action to be performed, the response, and the schema.
 type Context struct {
 	Request    *evo.Request
+	DBO        *gorm.DB
 	Object     reflect.Value
 	Sample     interface{}
 	Action     *Endpoint
