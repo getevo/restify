@@ -66,14 +66,6 @@ func (e *Entity) Debug() *Entity {
 }
 
 func NewEntity(obj interface{}, request *evo.Request) (*Entity, error) {
-	ref := reflect.ValueOf(obj)
-	for ref.Kind() == reflect.Ptr {
-		ref = ref.Elem()
-	}
-	if ref.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("invalid entity type %T", obj)
-	}
-
 	find := schema.Find(obj)
 	if find == nil {
 		return nil, fmt.Errorf("invalid entity %v", obj)
@@ -92,7 +84,7 @@ func NewEntity(obj interface{}, request *evo.Request) (*Entity, error) {
 		},
 	}
 	entity.Context.DBO = db.GetContext(entity.Context, entity.Context.Request)
-	entity.Context.DBO = entity.Context.DBO.Model(entity.Context.Object)
+	entity.Context.DBO = entity.Context.DBO.Model(entity.Context.Object.Interface())
 
 	return entity, nil
 }
