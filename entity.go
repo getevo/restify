@@ -75,6 +75,8 @@ func NewEntity(obj interface{}, request *evo.Request) (*Entity, error) {
 		Action:  nil,
 		Request: request,
 		Object:  find.Value,
+		Sample:  find.Sample,
+		Schema:  find.Schema,
 		Response: &Pagination{
 			TotalPages: 1,
 			Total:      1,
