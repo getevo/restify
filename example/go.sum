@@ -46,6 +46,7 @@ github.com/getevo/evo/v2 v2.0.0-20240816132056-21a98e5bcd92/go.mod h1:+dLcGWiqED
 github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c h1:L51ItdRgahgFY0zOeaF6hk+540y8hB1Reyed8b6/Vto=
 github.com/getevo/evo/v2 v2.0.0-20240824235257-177dc04f1a0c/go.mod h1:+dLcGWiqEDKkqvzkkfth4e1qTAhQyP9EQcU4mFdeXV4=
 github.com/getevo/evo/v2 v2.0.0-20250418122504-91f11afd17bc/go.mod h1:A7o5OiBF91mBLLL+UIOOg5dbmM170jopAOOG4ZgOLp4=
+github.com/getevo/evo/v2 v2.0.0-20250423071921-e9285a3e80db/go.mod h1:A7o5OiBF91mBLLL+UIOOg5dbmM170jopAOOG4ZgOLp4=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 h1:yPW/dYX0id8nVZ7be3Ku774zGl9hvcrimVBQp2o0poA=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9/go.mod h1:/vW02CjTwXnxp418rxOH+H60g370rfUOFitfnHLy+Po=
 github.com/getevo/postman v0.0.0-20240821202756-0e5fab66b666 h1:rfblSlry6uZjqA2oRDAhMGIlWDDjR1NFGxgioOYEqeM=
@@ -160,6 +161,7 @@ github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyC
 github.com/valyala/fasthttp v1.55.0 h1:Zkefzgt6a7+bVKHnu/YaYSOPfNYNisSVBo/unVCf8k8=
 github.com/valyala/fasthttp v1.55.0/go.mod h1:NkY9JtkrpPKmgwV3HTaS2HWaJss9RSIsRVfcxxoHiOM=
 github.com/valyala/fasthttp v1.60.0/go.mod h1:iY4kDgV3Gc6EqhRZ8icqcmlG6bqhcDXfuHgTO4FXCvc=
+github.com/valyala/fasthttp v1.61.0/go.mod h1:wRIV/4cMwUPWnRcDno9hGnYZGh78QzODFfo1LTUhBog=
 github.com/valyala/tcplisten v1.0.0 h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVSA8=
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
 github.com/xyproto/randomstring v1.0.5/go.mod h1:rgmS5DeNXLivK7YprL0pY+lTuhNQW3iGxZ18UQApw/E=

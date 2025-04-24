@@ -2,7 +2,7 @@ module example
 
 go 1.23.5
 
-require github.com/getevo/evo/v2 v2.0.0-20250418122504-91f11afd17bc
+require github.com/getevo/evo/v2 v2.0.0-20250423071921-e9285a3e80db
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.60.0 // indirect
+	github.com/valyala/fasthttp v1.61.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
