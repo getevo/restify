@@ -70,6 +70,7 @@ func filterRegEx(str string) []map[string]string {
 // filterMapper applies filters to the given query based on the provided filter string.
 // It parses the filter
 func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *Error) {
+	var table = context.Schema.Table
 	fRegEx := filterRegEx(filters)
 	for _, filter := range fRegEx {
 		var obj = context.CreateIndirectObject().Interface()
@@ -100,29 +101,29 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			if filter["column"] == "deleted_at" {
 				query = query.Unscoped()
 			}
-			query = query.Where(fmt.Sprintf("`%s` %s", filter["column"], filterConditions[filter["condition"]]))
+			query = query.Where(fmt.Sprintf("`%s`.`%s` %s", table, filter["column"], filterConditions[filter["condition"]]))
 		} else {
 			if filter["condition"] == ContainOperator {
-				query = query.Where(fmt.Sprintf("`%s` %s ?", filter["column"], "LIKE"), fmt.Sprintf("%%%s%%", filter["value"]))
+				query = query.Where(fmt.Sprintf("`%s`.`%s` %s ?", table, filter["column"], "LIKE"), fmt.Sprintf("%%%s%%", filter["value"]))
 			} else if filter["condition"] == NotInOperator {
 				valSlice := strings.Split(filter["value"], ",")
-				query = query.Where(fmt.Sprintf("`%s` NOT IN (?)", filter["column"]), valSlice)
+				query = query.Where(fmt.Sprintf("`%s`.`%s` NOT IN (?)", table, filter["column"]), valSlice)
 			} else if filter["condition"] == InOperator {
 				valSlice := strings.Split(filter["value"], ",")
-				query = query.Where(fmt.Sprintf("`%s` IN (?)", filter["column"]), valSlice)
+				query = query.Where(fmt.Sprintf("`%s`.`%s` IN (?)", table, filter["column"]), valSlice)
 			} else if filter["condition"] == FulltextSearchOperator {
-				query = query.Where(fmt.Sprintf("MATCH (`%s`) AGAINST (? IN NATURAL LANGUAGE MODE)", filter["column"]), filter["value"])
+				query = query.Where(fmt.Sprintf("MATCH (`%s`.`%s`) AGAINST (? IN NATURAL LANGUAGE MODE)", table, filter["column"]), filter["value"])
 			} else if filter["condition"] == BetweenOperator {
 				valSlice := strings.Split(filter["value"], ",")
 				if len(valSlice) != 2 {
 					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
 					return query, &err
 				}
-				query = query.Where(fmt.Sprintf("`%s` BETWEEN ? AND ?", filter["column"]), valSlice[0], valSlice[1])
+				query = query.Where(fmt.Sprintf("`%s`.`%s` BETWEEN ? AND ?", table, filter["column"]), valSlice[0], valSlice[1])
 
 			} else {
 				if v, ok := filterConditions[filter["condition"]]; ok {
-					query = query.Where(fmt.Sprintf("`%s` %s ?", filter["column"], v), filter["value"])
+					query = query.Where(fmt.Sprintf("`%s`.`%s` %s ?", table, filter["column"], v), filter["value"])
 				} else {
 					var err = NewError(fmt.Sprintf("invalid filter condition %s", filter["condition"]), 500)
 					return query, &err
@@ -133,7 +134,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 	}
 
 	for _, condition := range context.Conditions {
-		query = query.Where(fmt.Sprintf("`%s` %s ?", condition.Field, condition.Op), condition.Value)
+		query = query.Where(fmt.Sprintf("`%s`.`%s` %s ?", table, condition.Field, condition.Op), condition.Value)
 	}
 	//query = query.Debug()
 	return query, nil
