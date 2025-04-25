@@ -142,6 +142,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 
 // ApplyFilters applies filters to the query based on the request parameters in the context. It modifies the
 func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
+	var table = context.Schema.Table
 	var association = context.Request.Query("associations").String()
 	if association != "" {
 		if association == "1" || association == "true" || association == "*" {
@@ -162,7 +163,7 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 
 	var order = context.Request.Query("order").String()
 	if order != "" {
-		query = query.Order(parseOrderBy(order))
+		query = query.Order(parseOrderBy(order, table))
 	}
 
 	var groupBy = context.Request.Query("group_by").String()
@@ -219,7 +220,7 @@ func orderNormalizer(input string) string {
 	return fmt.Sprintf("%s %s", columnName, order)
 }
 
-func parseOrderBy(input string) string {
+func parseOrderBy(input, table string) string {
 	// Split by comma to process each order by clause individually
 	clauses := strings.Split(input, ",")
 	for i, cl := range clauses {
@@ -244,7 +245,7 @@ func parseOrderBy(input string) string {
 			order = "ASC" // default/fallback
 		}
 
-		clauses[i] = fmt.Sprintf("%s %s", column, order)
+		clauses[i] = fmt.Sprintf("`%s`.`%s` %s", table, column, order)
 	}
 
 	// Join all processed clauses with a comma
