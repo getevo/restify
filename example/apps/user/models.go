@@ -88,7 +88,7 @@ type Order struct {
 	OrderID   int      `gorm:"column:order_id;index;uniqueIndex:unq" json:"order_id"`
 	UserID    int      `gorm:"column:user_id;fk:user;uniqueIndex:unq" json:"user_id"`
 	ProductID int      `gorm:"column:product_id;fk:product;uniqueIndex:unq" json:"product_id"`
-	Product   *Product `gorm:"foreignKey:ProductID" json:"product,omitempty"`
+	Product   *Product `gorm:"foreignKey:ProductID;references:ProductID" json:"product,omitempty"`
 	Quantity  int      `gorm:"column:quantity" json:"quantity"`
 	Total     int      `gorm:"column:total"  json:"total"`
 	model.CreatedAt
