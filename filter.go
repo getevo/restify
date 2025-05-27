@@ -2,6 +2,7 @@ package restify
 
 import (
 	"fmt"
+	"github.com/getevo/evo/v2/lib/generic"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/url"
@@ -119,7 +120,17 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
 					return query, &err
 				}
-				query = query.Where(fmt.Sprintf("`%s`.`%s` BETWEEN ? AND ?", table, filter["column"]), valSlice[0], valSlice[1])
+				t1, err := generic.Parse(valSlice[0]).Time()
+				if err != nil {
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[0]), 400)
+					return query, &err
+				}
+				t2, err := generic.Parse(valSlice[1]).Time()
+				if err != nil {
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[1]), 400)
+					return query, &err
+				}
+				query = query.Where(fmt.Sprintf("`%s`.`%s` BETWEEN ? AND ?", table, filter["column"]), t1.Format("2006-01-02 15:04:05"), t2.Format("2006-01-02 15:04:05"))
 
 			} else {
 				if v, ok := filterConditions[filter["condition"]]; ok {
