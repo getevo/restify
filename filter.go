@@ -115,7 +115,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			} else if filter["condition"] == FulltextSearchOperator {
 				query = query.Where(fmt.Sprintf("MATCH (`%s`.`%s`) AGAINST (? IN NATURAL LANGUAGE MODE)", table, filter["column"]), filter["value"])
 			} else if filter["condition"] == BetweenOperator {
-				fmt.Println(filter["value"])
+				fmt.Println("value:", filter["value"])
 				valSlice := strings.Split(filter["value"], ",")
 				if len(valSlice) != 2 {
 					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
