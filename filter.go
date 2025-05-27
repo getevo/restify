@@ -53,7 +53,7 @@ var groupByRegex = regexp.MustCompile(`(?mi)^[a-z0-9_\-.,]+$`)
 
 // result will be [{"column":"column1","condition":"condition1","value":"value1"},{"column":"column2","condition":"condition2","value":"value2"},{"column":"column3","condition":"condition
 func filterRegEx(str string) []map[string]string {
-	var re = regexp.MustCompile(`(?m)((?P<column>[a-zA-Z_\-0-9]+)\[(?P<condition>[a-zA-Z]+)\](\=((?P<value>[a-zA-Z_\-0-9\s\%\,.\*]+))){0,1})\&*`)
+	var re = regexp.MustCompile(`(?m)((?P<column>[a-zA-Z_\-0-9]+)\[(?P<condition>[a-zA-Z]+)\](\=((?P<value>[a-zA-Z_\-0-9\s\%:\,.\*]+))){0,1})\&*`)
 	var keys = re.SubexpNames()
 	var result []map[string]string
 	for _, match := range re.FindAllStringSubmatch(str, -1) {
