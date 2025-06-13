@@ -217,7 +217,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 		context.HandleError(&ErrorHandlerNotFound)
 	}
 	var response = context.PrepareResponse()
-	context.Request.Write("test")
+	request.Write("test")
 	if context.Code == 0 {
 		request.Status(200)
 	} else {
