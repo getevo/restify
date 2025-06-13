@@ -198,7 +198,7 @@ type Condition struct {
 // If the action has a handler defined
 func (action *Endpoint) handler(request *evo.Request) interface{} {
 	request.Write("test")
-	return
+	return nil
 	context := &Context{
 		Request: request,
 		Action:  action,
