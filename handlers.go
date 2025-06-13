@@ -2,6 +2,7 @@ package restify
 
 import (
 	"fmt"
+	"github.com/getevo/evo/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm/clause"
 	"regexp"
@@ -302,7 +303,7 @@ func (Handler) All(context *Context) *Error {
 			return httpError
 		}
 	}
-
+	evo.Dump(ptr)
 	context.Response.Data = ptr
 	context.SetResponse(ptr)
 	return nil
