@@ -223,6 +223,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 	} else {
 		request.Status(context.Code)
 	}
+	evo.Dump(response)
 	request.Write("test")
 	return nil
 	request.SetHeader("Content-Type", "application/json; charset=utf-8")
