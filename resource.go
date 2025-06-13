@@ -394,7 +394,7 @@ func (context *Context) SetResponse(response interface{}) {
 		context.Request.WriteResponse(fmt.Errorf("invalid response"))
 		return
 	}
-	context.Request.WriteResponse("hellooo")
+
 	var v = reflect.ValueOf(response)
 	if v.Kind() == reflect.Ptr {
 		v = v.Elem()
