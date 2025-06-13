@@ -280,7 +280,6 @@ func (Handler) All(context *Context) *Error {
 	if !context.RestPermission(PermissionViewAll, obj) {
 		return &ErrorPermissionDenied
 	}
-	context.Request.Write("HELLO")
 	var dbo = context.GetDBO()
 
 	var slice = context.CreateIndirectSlice()

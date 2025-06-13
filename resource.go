@@ -197,6 +197,7 @@ type Condition struct {
 // It creates a new `Context` object with the request, action, object, and default response.
 // If the action has a handler defined
 func (action *Endpoint) handler(request *evo.Request) interface{} {
+	request.Write("test")
 	context := &Context{
 		Request: request,
 		Action:  action,
@@ -222,6 +223,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 	} else {
 		request.Status(context.Code)
 	}
+
 	request.SetHeader("Content-Type", "application/json; charset=utf-8")
 	request.Write(text.ToJSON(response))
 	return nil
