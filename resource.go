@@ -217,13 +217,14 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 		context.HandleError(&ErrorHandlerNotFound)
 	}
 	var response = context.PrepareResponse()
-	request.Write("test")
+
 	if context.Code == 0 {
 		request.Status(200)
 	} else {
 		request.Status(context.Code)
 	}
-
+	request.Write("test")
+	return nil
 	request.SetHeader("Content-Type", "application/json; charset=utf-8")
 	request.Write(text.ToJSON(response))
 	return nil
