@@ -197,8 +197,6 @@ type Condition struct {
 // It creates a new `Context` object with the request, action, object, and default response.
 // If the action has a handler defined
 func (action *Endpoint) handler(request *evo.Request) interface{} {
-	request.Write("test")
-	return nil
 	context := &Context{
 		Request: request,
 		Action:  action,
@@ -219,6 +217,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 		context.HandleError(&ErrorHandlerNotFound)
 	}
 	var response = context.PrepareResponse()
+	context.Request.Write("test")
 	if context.Code == 0 {
 		request.Status(200)
 	} else {
