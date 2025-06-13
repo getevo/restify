@@ -390,7 +390,9 @@ func (context *Context) PrepareResponse() *Pagination {
 // If there is an error during marshaling, it returns immediately without setting the response.
 // Note: The response is set to the `context.Request` using the `JSON` method.
 func (context *Context) SetResponse(response interface{}) {
+	evo.Dump(response)
 	if response == nil {
+		context.Request.WriteResponse(fmt.Errorf("invalid response"))
 		return
 	}
 	var v = reflect.ValueOf(response)
