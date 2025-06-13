@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/db"
-	"github.com/getevo/evo/v2/lib/text"
 	"github.com/getevo/postman"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/iancoleman/strcase"
@@ -223,12 +222,9 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 	} else {
 		request.Status(context.Code)
 	}
-	evo.Dump(response)
-	request.Write("test")
-	return nil
-	request.SetHeader("Content-Type", "application/json; charset=utf-8")
-	request.Write(text.ToJSON(response))
-	return nil
+
+	//request.SetHeader("Content-Type", "application/json; charset=utf-8")
+	return request.JSON(response)
 }
 
 func (action *Endpoint) RegisterRouter() {
