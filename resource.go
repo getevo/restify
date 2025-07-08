@@ -663,12 +663,13 @@ func (context *Context) ApplyFilter(f func(context *Context, db *gorm.DB) *gorm.
 	context.CustomFilter = f
 }
 
-func GetObjectResource(model any) (*Resource, error) {
+func GetResource(model any) (*Resource, error) {
 	stmt := db.Model(model).Statement
 	err := stmt.Parse(model)
 	if err != nil {
 		return nil, err
 	}
+	evo.Dump(Resources)
 	if resource, ok := Resources[stmt.Table]; ok {
 		return resource, nil
 	}
