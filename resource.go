@@ -69,6 +69,9 @@ func (res *Resource) SetAction(action *Endpoint) {
 	if action.Method == "" {
 		action.Method = MethodPOST
 	}
+	if action.AbsoluteURI != "" {
+		action.URL = action.AbsoluteURI
+	}
 	if action.URL == "" {
 		action.URL = strcase.ToSnake(action.Name)
 	}
@@ -84,7 +87,9 @@ func (res *Resource) SetAction(action *Endpoint) {
 	}
 
 	res.Path = res.Table
-	action.AbsoluteURI = "/" + strings.Trim(Prefix+"/"+res.Path+"/"+strings.Trim(action.URL, "/"), "/")
+	if action.AbsoluteURI == "" {
+		action.AbsoluteURI = "/" + strings.Trim(Prefix+"/"+res.Path+"/"+strings.Trim(action.URL, "/"), "/")
+	}
 	action.Resource = res
 
 	res.Actions = append(res.Actions, action)
