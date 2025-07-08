@@ -234,6 +234,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 }
 
 func (action *Endpoint) RegisterRouter() {
+	fmt.Printf("Registering %s %s%s\n", action.Method, action.Resource.Name, action.AbsoluteURI)
 	switch action.Method {
 	case MethodGET:
 		evo.Get(action.AbsoluteURI, action.handler)
