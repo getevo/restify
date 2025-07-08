@@ -58,14 +58,15 @@ func (app App) WhenReady() error {
 	}
 	app.registerHooks()
 	var controller Controller
+
+	evo.Get(Prefix+"/models", controller.ModelsHandler)
+	for _, fn := range onReady {
+		fn()
+	}
 	for idx, _ := range Resources {
 		for i, _ := range Resources[idx].Actions {
 			Resources[idx].Actions[i].RegisterRouter()
 		}
-	}
-	evo.Get(Prefix+"/models", controller.ModelsHandler)
-	for _, fn := range onReady {
-		fn()
 	}
 	if postmanRegistered {
 		evo.Get(Prefix+"/postman", controller.PostmanHandler)
