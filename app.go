@@ -12,7 +12,7 @@ import (
 )
 
 var Prefix = "/admin/rest"
-
+var onReady []func()
 var permissionHandler func(permissions Permissions, context *Context) bool
 var collection *postman.Collection
 
@@ -64,12 +64,18 @@ func (app App) WhenReady() error {
 		}
 	}
 	evo.Get(Prefix+"/models", controller.ModelsHandler)
+	for _, fn := range onReady {
+		fn()
+	}
 	if postmanRegistered {
 		evo.Get(Prefix+"/postman", controller.PostmanHandler)
 	}
 	return nil
 }
 
+func Ready(fn func()) {
+	onReady = append(onReady, fn)
+}
 func (app App) Priority() application.Priority {
 	return math.MaxInt32
 }

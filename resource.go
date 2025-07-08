@@ -669,7 +669,6 @@ func GetResource(model any) (*Resource, error) {
 	if err != nil {
 		return nil, err
 	}
-	evo.Dump(Resources)
 	if resource, ok := Resources[stmt.Table]; ok {
 		return resource, nil
 	}
