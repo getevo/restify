@@ -370,11 +370,11 @@ func (Handler) Get(context *Context) *Error {
 	object := context.CreateIndirectObject()
 	ptr := object.Addr().Interface()
 
-	exits, err := context.FindByPrimaryKey(ptr)
+	exists, err := context.FindByPrimaryKey(ptr)
 	if err != nil {
 		return err
 	}
-	if !exits {
+	if !exists {
 		return &ErrorObjectNotExist
 	}
 

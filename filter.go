@@ -154,6 +154,9 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 // ApplyFilters applies filters to the query based on the request parameters in the context. It modifies the
 func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	var table = context.Schema.Table
+	if context.CustomFilter != nil {
+		query = context.CustomFilter(context, query)
+	}
 	var association = context.Request.Query("associations").String()
 	if association != "" {
 		if association == "1" || association == "true" || association == "*" {

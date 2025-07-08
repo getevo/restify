@@ -173,16 +173,17 @@ type Filter struct {
 // It contains information about the request, the object being processed,
 // the sample data, the action to be performed, the response, and the schema.
 type Context struct {
-	Request    *evo.Request
-	DBO        *gorm.DB
-	Object     reflect.Value
-	Sample     interface{}
-	Action     *Endpoint
-	Response   *Pagination
-	Schema     *schema.Schema
-	Conditions []Condition
-	override   *reflect.Value
-	Code       int
+	Request      *evo.Request
+	DBO          *gorm.DB
+	Object       reflect.Value
+	Sample       interface{}
+	Action       *Endpoint
+	CustomFilter func(context *Context, dbo *gorm.DB) *gorm.DB
+	Response     *Pagination
+	Schema       *schema.Schema
+	Conditions   []Condition
+	override     *reflect.Value
+	Code         int
 }
 
 type Condition struct {
@@ -651,4 +652,20 @@ func (context *Context) AddValidationErrors(errs ...error) {
 			context.Response.ValidationError = append(context.Response.ValidationError, v)
 		}
 	}
+}
+
+func (context *Context) ApplyFilter(f func(context *Context, db *gorm.DB) *gorm.DB) {
+	context.CustomFilter = f
+}
+
+func GetObjectResource(model any) (*Resource, error) {
+	stmt := db.Model(model).Statement
+	err := stmt.Parse(model)
+	if err != nil {
+		return nil, err
+	}
+	if resource, ok := Resources[stmt.Table]; ok {
+		return resource, nil
+	}
+	return nil, fmt.Errorf("object %s not found in resources", stmt.Table)
 }
