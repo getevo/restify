@@ -9,6 +9,7 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
 - **Data Entry:** Facilitate data entry processes through RESTful endpoints.
 - **Dashboard Integration:** Seamlessly integrate with dashboards for real-time data management.
 - **Third-Party Communication:** Use the APIs to interact with external services or applications.
+- **Comprehensive Error Handling:** Structured error responses with detailed information, multiple error types, automatic logging, and consistent formatting for better debugging and monitoring.
 
 ---
 
@@ -39,6 +40,13 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
   - [Override](./docs/context.md#override)
   - [Error Handling](./docs/context.md#error-handling)
   - [Custom Validation Errors](./docs/context.md#custom-validation-errors)
+- **[Error Handling](./docs/error-handling.md)**
+  - [Error Architecture](./docs/error-handling.md#error-architecture)
+  - [Error Types](./docs/error-handling.md#error-types)
+  - [Error Flow](./docs/error-handling.md#error-flow)
+  - [Error Creation](./docs/error-handling.md#error-creation)
+  - [Error Response Formats](./docs/error-handling.md#error-response-formats)
+  - [Best Practices](./docs/error-handling.md#best-practices)
 - **[Advanced Features](./docs/advanced.md)**
   - [Ready Function](./docs/advanced.md#ready-function)
   - [Debug Mode](./docs/advanced.md#debug-mode)

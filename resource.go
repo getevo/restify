@@ -219,7 +219,7 @@ func (action *Endpoint) handler(request *evo.Request) interface{} {
 	if action.Handler != nil {
 		context.HandleError(action.Handler(context))
 	} else {
-		context.HandleError(&ErrorHandlerNotFound)
+		context.HandleError(ErrorHandlerNotFound)
 	}
 	var response = context.PrepareResponse()
 
@@ -427,8 +427,16 @@ func (context *Context) HandleError(error *Error) {
 		context.Response.Error = error.Message
 		context.Response.Success = false
 		context.Code = error.Code
-	}
 
+		// Log the error with context
+		LogError(error, LogLevelError, map[string]interface{}{
+			"http_code":  error.Code,
+			"error_code": error.ErrorCode,
+			"trace_id":   error.TraceID,
+			"endpoint":   context.Request.Path(),
+			"method":     context.Request.Method(),
+		})
+	}
 }
 
 func (context *Context) RestPermission(permission Permission, object reflect.Value) bool {
@@ -447,10 +455,24 @@ func (context *Context) RestPermission(permission Permission, object reflect.Val
 }
 
 func (context *Context) Error(err error, code int) *Error {
-	return &Error{
-		Code:    code,
-		Message: err.Error(),
+	// Determine error code based on HTTP status
+	var errorCode string
+	switch code {
+	case StatusBadRequest:
+		errorCode = ErrorCodeBadRequest
+	case StatusUnauthorized:
+		errorCode = ErrorCodeUnauthorized
+	case StatusForbidden:
+		errorCode = ErrorCodeForbidden
+	case StatusNotFound:
+		errorCode = ErrorCodeNotFound
+	case StatusInternalServerError:
+		errorCode = ErrorCodeInternal
+	default:
+		errorCode = ErrorCodeInternal
 	}
+
+	return WrapError(err, err.Error(), code, errorCode)
 }
 
 func (context *Context) GetDBO() *gorm.DB {

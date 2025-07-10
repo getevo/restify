@@ -53,7 +53,7 @@ var groupByRegex = regexp.MustCompile(`(?mi)^[a-z0-9_\-.,]+$`)
 
 // result will be [{"column":"column1","condition":"condition1","value":"value1"},{"column":"column2","condition":"condition2","value":"value2"},{"column":"column3","condition":"condition
 func filterRegEx(str string) []map[string]string {
-	var re = regexp.MustCompile(`(?m)((?P<column>[a-zA-Z_\-0-9]+)\[(?P<condition>[a-zA-Z]+)\](\=((?P<value>[a-zA-Z_\-0-9\s\%\:\,.\*]+))){0,1})\&*`)
+	var re = regexp.MustCompile(`(?m)((?P<column>[a-zA-Z_\-0-9]+)\[(?P<condition>[a-zA-Z]+)](=((?P<value>[a-zA-Z_\-0-9\s%:\,.\*]+)))?)&*`)
 	var keys = re.SubexpNames()
 	var result []map[string]string
 	for _, match := range re.FindAllStringSubmatch(str, -1) {
@@ -87,7 +87,7 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			}
 		}
 		if !fnd {
-			return nil, &ErrorColumnNotExist
+			return nil, ErrorColumnNotExist
 		}
 		v := ref.FieldByName(fieldName)
 
@@ -117,17 +117,17 @@ func filterMapper(filters string, context *Context, query *gorm.DB) (*gorm.DB, *
 			} else if filter["condition"] == BetweenOperator {
 				valSlice := strings.Split(filter["value"], ",")
 				if len(valSlice) != 2 {
-					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), 400)
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected 2 values got %d", len(valSlice)), StatusBadRequest)
 					return query, &err
 				}
 				t1, err := generic.Parse(valSlice[0]).Time()
 				if err != nil {
-					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[0]), 400)
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[0]), StatusBadRequest)
 					return query, &err
 				}
 				t2, err := generic.Parse(valSlice[1]).Time()
 				if err != nil {
-					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[1]), 400)
+					var err = NewError(fmt.Sprintf("invalid filter value for between operator, expected date got %s", valSlice[1]), StatusBadRequest)
 					return query, &err
 				}
 				query = query.Where(fmt.Sprintf("`%s`.`%s` BETWEEN ? AND ?", table, filter["column"]), t1.Format("2006-01-02 15:04:05"), t2.Format("2006-01-02 15:04:05"))
