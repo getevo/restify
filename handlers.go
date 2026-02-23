@@ -2,7 +2,7 @@ package restify
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v3/log"
 	"gorm.io/gorm/clause"
 	"regexp"
 	"strings"
