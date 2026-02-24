@@ -149,6 +149,11 @@ func (Handler) Update(context *Context) *Error {
 		return context.Error(err, 500)
 	}
 
+	// Restore primary key fields that may have been zeroed by the request body
+	// (e.g. a JSON body that includes "content_id":0 overwrites the value loaded
+	// by FindByPrimaryKey, causing uniqueness validators to skip PK exclusion).
+	context.applyURLPrimaryKeys(ptr)
+
 	httpError := callBeforeUpdateHook(ptr, context)
 	if httpError != nil {
 		return httpError

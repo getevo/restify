@@ -528,6 +528,38 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	return dbo.Take(input).RowsAffected != 0, httpErr
 }
 
+// applyURLPrimaryKeys restores primary key fields from URL params when they
+// were zeroed out by BodyParser (e.g. a JSON body that sends "content_id":0).
+// Only overwrites fields whose current value is zero.
+func (context *Context) applyURLPrimaryKeys(ptr interface{}) {
+	v := reflect.Indirect(reflect.ValueOf(ptr))
+	if !v.IsValid() || v.Kind() != reflect.Struct {
+		return
+	}
+	for _, pkField := range context.Action.Resource.Schema.PrimaryFields {
+		paramVal := context.Request.Param(pkField.DBName).String()
+		if paramVal == "" {
+			continue
+		}
+		f := v.FieldByName(pkField.Name)
+		if !f.IsValid() || !f.CanSet() || !f.IsZero() {
+			continue
+		}
+		switch f.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			if n, err := strconv.ParseInt(paramVal, 10, 64); err == nil {
+				f.SetInt(n)
+			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			if n, err := strconv.ParseUint(paramVal, 10, 64); err == nil {
+				f.SetUint(n)
+			}
+		case reflect.String:
+			f.SetString(paramVal)
+		}
+	}
+}
+
 func getAssociations(prefix string, s *schema.Schema, loaded ...string) []string {
 	var preload []string
 	if len(loaded) == 0 {
