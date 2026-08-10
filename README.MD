@@ -29,7 +29,10 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
   - [Configuration](./docs/mcp.md#configuration)
   - [The Generated Tools](./docs/mcp.md#the-generated-tools)
   - [Input Schemas](./docs/mcp.md#input-schemas)
+  - [Every Tool, End to End](./docs/mcp.md#every-tool-end-to-end)
+  - [Errors](./docs/mcp.md#errors)
   - [Permissions and Hooks](./docs/mcp.md#permissions-and-hooks)
+  - [Connecting a Client](./docs/mcp.md#connecting-a-client)
 - **[Developers Integration Guide](./docs/developer.md)**
 - **[Customization](./docs/customization.md)**
   - [Model Hooks](./docs/customization.md#model-hooks)
