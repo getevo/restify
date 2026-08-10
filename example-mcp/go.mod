@@ -3,7 +3,7 @@ module example-mcp
 go 1.25.0
 
 require (
-	github.com/getevo/evo/v2 v2.0.0-20260806120932-91e42ac2438e
+	github.com/getevo/evo/v2 v2.0.0-20260810033015-7d28d16248d5
 	github.com/getevo/restify v0.0.0-20241218131058-fbfe13ac4b80
 	github.com/glebarez/sqlite v1.11.0
 	gorm.io/gorm v1.30.0

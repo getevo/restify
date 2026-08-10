@@ -44,6 +44,8 @@ github.com/getevo/evo/v2 v2.0.0-20250423071921-e9285a3e80db h1:6AwWDrbUfxRUaxQ+P
 github.com/getevo/evo/v2 v2.0.0-20250423071921-e9285a3e80db/go.mod h1:A7o5OiBF91mBLLL+UIOOg5dbmM170jopAOOG4ZgOLp4=
 github.com/getevo/evo/v2 v2.0.0-20260806120932-91e42ac2438e h1:l2A5KNpZVudTczQj2piKkc1YyhDM1+RpkGMjgKoYFH4=
 github.com/getevo/evo/v2 v2.0.0-20260806120932-91e42ac2438e/go.mod h1:GpxGYR4JpHx+yNW1cHGxtYb60ettUbNOqDwAh3c+sNw=
+github.com/getevo/evo/v2 v2.0.0-20260810033015-7d28d16248d5 h1:98scbw8pjfbABXJiRoRLSygVlVHmIoX8ZUlUd3R5JFU=
+github.com/getevo/evo/v2 v2.0.0-20260810033015-7d28d16248d5/go.mod h1:GpxGYR4JpHx+yNW1cHGxtYb60ettUbNOqDwAh3c+sNw=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9 h1:yPW/dYX0id8nVZ7be3Ku774zGl9hvcrimVBQp2o0poA=
 github.com/getevo/json v0.0.0-20240816130540-f0ea83b195d9/go.mod h1:/vW02CjTwXnxp418rxOH+H60g370rfUOFitfnHLy+Po=
 github.com/getevo/postman v0.0.0-20240821202756-0e5fab66b666 h1:rfblSlry6uZjqA2oRDAhMGIlWDDjR1NFGxgioOYEqeM=

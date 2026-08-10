@@ -2,7 +2,7 @@ module example
 
 go 1.25.0
 
-require github.com/getevo/evo/v2 v2.0.0-20260806120932-91e42ac2438e
+require github.com/getevo/evo/v2 v2.0.0-20260810033015-7d28d16248d5
 
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
