@@ -157,7 +157,7 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	if context.CustomFilter != nil {
 		query = context.CustomFilter(context, query)
 	}
-	var association = context.Request.Query("associations").String()
+	var association = context.Query("associations").String()
 	if association != "" {
 		if association == "1" || association == "true" || association == "*" {
 			query = query.Preload(clause.Associations)
@@ -175,39 +175,39 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 
 	}
 
-	var order = context.Request.Query("order").String()
+	var order = context.Query("order").String()
 	if order != "" {
 		query = query.Order(parseOrderBy(order, table))
 	}
 
-	var groupBy = context.Request.Query("group_by").String()
+	var groupBy = context.Query("group_by").String()
 	if groupBy != "" {
 		if groupByRegex.MatchString(groupBy) {
 			query = query.Group(groupBy)
 		}
 	}
 
-	var fields = context.Request.Query("fields").String()
+	var fields = context.Query("fields").String()
 	if len(fields) > 0 {
 		splitFields := strings.Split(fields, ",")
 		query = query.Select(splitFields)
 	}
 
-	var join = context.Request.Query("join").String()
+	var join = context.Query("join").String()
 	if len(join) > 0 {
 		if relations := relationsMapper(join); relations != "" {
 			query = query.Preload(relations)
 		}
 	}
 	var httpErr *Error
-	query, httpErr = filterMapper(context.Request.QueryString(), context, query)
+	query, httpErr = filterMapper(context.QueryString(), context, query)
 
-	var offset = context.Request.Query("offset").Int()
+	var offset = context.Query("offset").Int()
 	if offset > 0 {
 		query = query.Offset(offset)
 	}
 
-	var limit = context.Request.Query("limit").Int()
+	var limit = context.Query("limit").Int()
 	if limit > 0 {
 		query = query.Limit(limit)
 	}

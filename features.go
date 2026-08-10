@@ -10,6 +10,7 @@ type Feature struct {
 	DisableSet       bool
 	DisableAggregate bool
 	API              bool
+	MCP              bool
 }
 
 // DisableCreate is a flag to disable the creation of new objects.

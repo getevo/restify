@@ -184,7 +184,7 @@ func (Handler) Create(context *Context) *Error {
 	ptr := object.Addr().Interface()
 
 	// Parse the JSON request body into the model struct
-	err := context.Request.BodyParser(ptr)
+	err := context.ParseBody(ptr)
 	if err != nil {
 		return context.Error(err, StatusBadRequest)
 	}
@@ -235,7 +235,7 @@ func (h Handler) BatchCreate(context *Context) *Error {
 	object := context.CreateIndirectSlice()
 	ptr := object.Addr().Interface()
 
-	err := context.Request.BodyParser(ptr)
+	err := context.ParseBody(ptr)
 	if err != nil {
 		return context.Error(err, StatusBadRequest)
 	}
@@ -363,11 +363,11 @@ func (h Handler) Update(context *Context) *Error {
 	LogError(nil, LogLevelInfo, map[string]interface{}{
 		"operation": "update_start",
 		"resource":  context.Action.Resource.Table,
-		"method":    context.Request.Method(),
+		"method":    context.Method(),
 	})
 
 	// Determine if this is a partial update (PATCH) or full update (PUT)
-	isPartialUpdate := context.Request.Method() == "PATCH"
+	isPartialUpdate := context.Method() == "PATCH"
 
 	if isPartialUpdate {
 		return h.handlePartialUpdate(context, dbo, object, ptr)
@@ -383,7 +383,7 @@ func (h Handler) handlePartialUpdate(context *Context, dbo *gorm.DB, object refl
 	updatePtr := updateObject.Addr().Interface()
 
 	// Parse only the provided fields from request body
-	err := context.Request.BodyParser(updatePtr)
+	err := context.ParseBody(updatePtr)
 	if err != nil {
 		return context.Error(err, StatusBadRequest)
 	}
@@ -443,7 +443,7 @@ func (h Handler) handlePartialUpdate(context *Context, dbo *gorm.DB, object refl
 // handleFullUpdate handles PUT operations for full updates
 func (h Handler) handleFullUpdate(context *Context, dbo *gorm.DB, object reflect.Value, ptr interface{}) *Error {
 	// Parse the complete object from request body
-	err := context.Request.BodyParser(ptr)
+	err := context.ParseBody(ptr)
 	if err != nil {
 		return context.Error(err, StatusBadRequest)
 	}
@@ -506,12 +506,12 @@ func (h Handler) BatchUpdate(context *Context) *Error {
 		return httpErr
 	}
 
-	err := context.Request.BodyParser(ptr)
+	err := context.ParseBody(ptr)
 	if err != nil {
 		return context.Error(err, StatusInternalServerError)
 	}
 
-	if context.Request.Query("unsafe").String() == "" {
+	if context.Query("unsafe").String() == "" {
 		stmt := query.Statement
 		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
 			return ErrorUnsafe
@@ -549,7 +549,7 @@ func (h Handler) BatchUpdate(context *Context) *Error {
 	})
 
 	// Handle optional return data with memory optimization
-	if context.Request.Query("return").String() != "" {
+	if context.Query("return").String() != "" {
 		return h.handleBatchUpdateResponse(context, query)
 	}
 
@@ -713,8 +713,8 @@ func (Handler) Paginate(context *Context) *Error {
 
 	ptr := slice.Addr().Interface()
 	var p Pagination
-	p.SetLimit(context.Request.Query("size").Int())
-	p.SetCurrentPage(context.Request.Query("page").Int())
+	p.SetLimit(context.Query("size").Int())
+	p.SetCurrentPage(context.Query("page").Int())
 	context.Response.Size = p.Limit
 	context.Response.Offset = p.GetOffset()
 	context.Response.Page = p.Page
@@ -790,7 +790,7 @@ func (h Handler) BatchDelete(context *Context) *Error {
 		return httpErr
 	}
 
-	if context.Request.Query("unsafe").String() == "" {
+	if context.Query("unsafe").String() == "" {
 		stmt := query.Statement
 		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
 			return ErrorUnsafe
@@ -841,7 +841,7 @@ func (h Handler) parseSetInput(context *Context) (input, loader reflect.Value, h
 	loader = context.CreateIndirectSlice()
 	inputPtr := input.Addr().Interface()
 
-	err := context.Request.BodyParser(inputPtr)
+	err := context.ParseBody(inputPtr)
 	if err != nil {
 		return input, loader, context.Error(err, StatusBadRequest)
 	}
@@ -866,7 +866,7 @@ func (h Handler) buildSetQuery(context *Context, loader reflect.Value) (*gorm.DB
 		return nil, httpErr
 	}
 
-	if context.Request.Query("unsafe").String() == "" {
+	if context.Query("unsafe").String() == "" {
 		stmt := query.Statement
 		if stmt != nil && stmt.Clauses["WHERE"].Expression == nil {
 			return nil, ErrorUnsafe
@@ -971,7 +971,7 @@ func (h Handler) processSetCreations(context *Context, input, loader reflect.Val
 
 // handleSetResponse handles the optional return data for Set operation
 func (h Handler) handleSetResponse(context *Context, query *gorm.DB, loader reflect.Value) *Error {
-	if context.Request.Query("return").String() != "" {
+	if context.Query("return").String() != "" {
 		loaderPtr := loader.Addr().Interface()
 		query.Unscoped().Find(loaderPtr)
 
@@ -1057,7 +1057,7 @@ func (h Handler) buildAggregateQuery(context *Context) (*gorm.DB, *Error) {
 
 // parseAggregateFields parses and validates the fields parameter for aggregation
 func (h Handler) parseAggregateFields(context *Context) (string, *Error) {
-	fieldsInput := context.Request.Query("fields").String()
+	fieldsInput := context.Query("fields").String()
 	if fieldsInput == "" {
 		LogError(fmt.Errorf("fields parameter missing"), LogLevelWarn, map[string]interface{}{
 			"operation": "aggregate_parse_fields",
@@ -1113,7 +1113,7 @@ func (h Handler) parseAggregateFields(context *Context) (string, *Error) {
 
 // executeAggregateQuery executes the aggregate query and handles grouping
 func (h Handler) executeAggregateQuery(context *Context, query *gorm.DB, selectClause string) *Error {
-	groupByInput := context.Request.Query("group_by").String()
+	groupByInput := context.Query("group_by").String()
 
 	if columnNameRegex.MatchString(groupByInput) {
 		// Execute grouped aggregation

@@ -179,6 +179,7 @@ type Filter struct {
 // the sample data, the action to be performed, the response, and the schema.
 type Context struct {
 	Request      *evo.Request
+	Input        *Input
 	DBO          *gorm.DB
 	Object       reflect.Value
 	Sample       interface{}
@@ -395,7 +396,13 @@ func (context *Context) PrepareResponse() *Pagination {
 // Otherwise, it marshals the response as is.
 // If there is an error during marshaling, it returns immediately without setting the response.
 // Note: The response is set to the `context.Request` using the `JSON` method.
+//
+// A call that did not arrive over HTTP has no response to write to — its caller
+// reads context.Response instead — so nothing is written in that case.
 func (context *Context) SetResponse(response interface{}) {
+	if context.Input != nil {
+		return
+	}
 	if response == nil {
 		context.Request.WriteResponse(fmt.Errorf("invalid response"))
 		return
@@ -433,8 +440,8 @@ func (context *Context) HandleError(error *Error) {
 			"http_code":  error.Code,
 			"error_code": error.ErrorCode,
 			"trace_id":   error.TraceID,
-			"endpoint":   context.Request.Path(),
-			"method":     context.Request.Method(),
+			"endpoint":   context.Path(),
+			"method":     context.Method(),
 		})
 	}
 }
@@ -509,7 +516,7 @@ type Info struct {
 // The method takes an input parameter, which can be a struct or a
 func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	var dbo = context.GetDBO()
-	var association = context.Request.Query("associations").String()
+	var association = context.Query("associations").String()
 	if association != "" {
 		if association == "1" || association == "true" {
 			dbo = dbo.Preload(clause.Associations)
@@ -529,7 +536,7 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 	var where []string
 	var params []interface{}
 	for _, field := range context.Action.Resource.Schema.PrimaryFields {
-		var v interface{} = context.Request.Param(field.DBName).String()
+		var v interface{} = context.Param(field.DBName).String()
 		if v == "" {
 			v = getValueByFieldName(input, field.Name)
 		}
@@ -537,14 +544,14 @@ func (context *Context) FindByPrimaryKey(input interface{}) (bool, *Error) {
 		params = append(params, v)
 	}
 
-	var join = context.Request.Query("join").String()
+	var join = context.Query("join").String()
 	if len(join) > 0 {
 		if relations := relationsMapper(join); relations != "" {
 			dbo = dbo.Preload(relations)
 		}
 	}
 	var httpErr *Error
-	dbo, httpErr = filterMapper(context.Request.QueryString(), context, dbo)
+	dbo, httpErr = filterMapper(context.QueryString(), context, dbo)
 	dbo = dbo.Where(strings.Join(where, " AND "), params...)
 
 	return dbo.Take(input).RowsAffected != 0, httpErr

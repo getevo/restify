@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/getevo/evo/v2"
 	"github.com/getevo/evo/v2/lib/db"
-	"github.com/getevo/evo/v2/lib/model"
+	"github.com/getevo/evo/v2/lib/db/types"
 	"github.com/getevo/restify"
 	"github.com/google/uuid"
 	"net/http"
@@ -23,9 +23,9 @@ type User struct {
 	Name     string  `gorm:"column:name;size:255" validation:"required,alpha" json:"name"`
 	Email    string  `gorm:"column:email;size:255;uniqueIndex" validation:"required,email" json:"email"`
 	Orders   []Order `gorm:"foreignKey:UserID" json:"orders,omitempty"`
-	model.CreatedAt
-	model.UpdatedAt
-	model.DeletedAt // enables soft delete functionality
+	types.CreatedAt
+	types.UpdatedAt
+	types.SoftDelete // enables soft delete functionality
 	restify.API
 }
 
@@ -91,8 +91,8 @@ type Order struct {
 	Product   *Product `gorm:"foreignKey:ProductID;references:ProductID" json:"product,omitempty"`
 	Quantity  int      `gorm:"column:quantity" json:"quantity"`
 	Total     int      `gorm:"column:total"  json:"total"`
-	model.CreatedAt
-	model.UpdatedAt
+	types.CreatedAt
+	types.UpdatedAt
 	restify.API
 	restify.DisableCreate
 	restify.DisableUpdate
@@ -107,9 +107,9 @@ type Product struct {
 	ProductID int    `gorm:"column:product_id;primaryKey;autoIncrement" json:"product_id"`
 	Name      string `gorm:"column:name;size:255" json:"name"`
 	UnitPrice int    `gorm:"column:unit_price" json:"unit_price"`
-	model.CreatedAt
-	model.UpdatedAt
-	model.DeletedAt
+	types.CreatedAt
+	types.UpdatedAt
+	types.SoftDelete
 	restify.API
 	restify.DisableSet
 }
@@ -122,9 +122,9 @@ type Article struct {
 	ArticleID int    `gorm:"column:article_id;primaryKey;autoIncrement" json:"article_id"`
 	UserID    int    `gorm:"column:user_id;fk:user" json:"user_id"`
 	Body      string `gorm:"column:body;type:text"  json:"body"`
-	model.CreatedAt
-	model.UpdatedAt
-	model.DeletedAt
+	types.CreatedAt
+	types.UpdatedAt
+	types.SoftDelete
 	restify.API
 }
 

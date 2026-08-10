@@ -14,6 +14,15 @@ Database:
   Type: sqlite
   Username: root
 
+# This demo is REST only. The MCP endpoint and Restify's tool generation are
+# both off; see ../example-mcp for the one that turns them on.
+MCP:
+  enabled: false
+
+Restify:
+  MCP:
+    Enabled: false
+
 HTTP:
   BodyLimit: 10mb
   CaseSensitive: false
@@ -29,7 +38,7 @@ HTTP:
   IdleTimeout: 0
   Immutable: false
   Network: ""
-  Port: 8080
+  Port: 8081
   Prefork: false
   ProxyHeader: X-Forwarded-For
   ReadBufferSize: 10mb

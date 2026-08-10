@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	evo.Setup()
+	if err := evo.Setup(sqliteDriver{}); err != nil {
+		panic(err)
+	}
 
 	evo.Register(restify.App{}, user.App{})
 

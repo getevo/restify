@@ -9,6 +9,7 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
 - **Data Entry:** Facilitate data entry processes through RESTful endpoints.
 - **Dashboard Integration:** Seamlessly integrate with dashboards for real-time data management.
 - **Third-Party Communication:** Use the APIs to interact with external services or applications.
+- **AI Agent Tools:** Publish your models as MCP tools, so an agent can read and edit them through the same handlers, permissions and hooks as the REST API.
 - **Comprehensive Error Handling:** Structured error responses with detailed information, multiple error types, automatic logging, and consistent formatting for better debugging and monitoring.
 
 ---
@@ -23,6 +24,12 @@ Restify is an application built for the [EVO Framework](https://github.com/getev
   - [Select Specific Fields](./docs/endpoints.md#select-specific-fields)
   - [Postman Collection Generator](./docs/endpoints.md#postman-collection-generator)
   - [Example Postman Collection](./docs/endpoints.md#example-postman-collection)
+- **[MCP Tools (AI agents)](./docs/mcp.md)**
+  - [Quick Start](./docs/mcp.md#quick-start)
+  - [Configuration](./docs/mcp.md#configuration)
+  - [The Generated Tools](./docs/mcp.md#the-generated-tools)
+  - [Input Schemas](./docs/mcp.md#input-schemas)
+  - [Permissions and Hooks](./docs/mcp.md#permissions-and-hooks)
 - **[Developers Integration Guide](./docs/developer.md)**
 - **[Customization](./docs/customization.md)**
   - [Model Hooks](./docs/customization.md#model-hooks)

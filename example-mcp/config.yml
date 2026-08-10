@@ -1,0 +1,61 @@
+Database:
+  Cache: "false"
+  ConnMaxLifTime: 1h
+  Database: "demo.sqlite"
+  Debug: "3"
+  Enabled: true
+  MaxIdleConns: "10"
+  MaxOpenConns: "100"
+  Params: ""
+  Password: ""
+  SSLMode: false
+  Server: ""
+  SlowQueryThreshold: 500ms
+  Type: sqlite
+  Username: ""
+
+# The framework's MCP endpoint. Disabled by default, so it has to be turned on
+# here before any tool is reachable.
+MCP:
+  enabled: true
+  path: /mcp
+  name: restify-demo
+  version: 1.0.0
+  instructions: Read and edit customers and invoices of the demo shop.
+  allowed_origins: "*"
+
+# Restify only generates tools when this is on. Models still have to carry the
+# restify.MCP marker.
+Restify:
+  MCP:
+    Enabled: true
+    ReadOnly: false
+    Prefix: ""
+
+HTTP:
+  BodyLimit: 10mb
+  CaseSensitive: false
+  CompressedFileSuffix: .evo.gz
+  Concurrency: 1024
+  DisableDefaultContentType: false
+  DisableDefaultDate: false
+  DisableHeaderNormalizing: false
+  DisableKeepalive: false
+  ETag: false
+  GETOnly: false
+  Host: 127.0.0.1
+  IdleTimeout: 0
+  Immutable: false
+  Network: ""
+  Port: 8080
+  Prefork: false
+  ProxyHeader: X-Forwarded-For
+  ReadBufferSize: 10mb
+  ReadTimeout: 1s
+  ReduceMemoryUsage: false
+  ServerHeader: EVO
+  StrictRouting: false
+  UnescapePath: false
+  EnablePrintRoutes: false
+  WriteBufferSize: 4kb
+  WriteTimeout: 5s

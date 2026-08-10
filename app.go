@@ -59,7 +59,7 @@ func (app App) Register() error {
 		if context, ok := v.(*Context); ok {
 			// Enable SQL debugging when ?debug=restify query parameter is present
 			// This helps developers see the actual SQL queries being executed
-			if context.Request.Query("debug").String() == "restify" {
+			if context.Query("debug").String() == "restify" {
 				db = db.Debug()
 			}
 
@@ -74,6 +74,9 @@ func (app App) Register() error {
 
 		return db
 	})
+
+	// Read the Restify.MCP section of the configuration file
+	loadMCPSettings()
 
 	// Initialize Postman collection for API documentation generation
 	collection = postman.NewCollection("Restify", "")
@@ -138,6 +141,13 @@ func (app App) WhenReady() error {
 		for i := range Resources[idx].Actions {
 			Resources[idx].Actions[i].RegisterRouter()
 		}
+	}
+
+	// Expose the marked models as MCP tools. This runs before the framework
+	// mounts the MCP endpoint, so every tool is in place by the time a client
+	// can list them.
+	if mcpSettings.Enabled {
+		registerMCPTools()
 	}
 
 	// Register Postman collection endpoint if Postman integration is enabled
