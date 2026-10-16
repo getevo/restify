@@ -5,6 +5,7 @@ import (
 	"github.com/getevo/evo/v2/lib/generic"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/schema"
 	"net/url"
 	"reflect"
 	"regexp"
@@ -48,6 +49,8 @@ const (
 	BetweenOperator        = "between"
 	FulltextSearchOperator = "search"
 )
+
+var aggregateFieldRegex = regexp.MustCompile(`(?i)^[a-z0-9_*\-]+\.(count|sum|min|max|avg|first|last)$`)
 
 var groupByRegex = regexp.MustCompile(`(?mi)^[a-z0-9_\-.,]+$`)
 
@@ -177,7 +180,13 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 
 	var order = context.Request.Query("order").String()
 	if order != "" {
-		query = query.Order(parseOrderBy(order, table))
+		clause, httpErr := parseOrderBy(order, context.Schema)
+		if httpErr != nil {
+			return nil, httpErr
+		}
+		if clause != "" {
+			query = query.Order(clause)
+		}
 	}
 
 	var groupBy = context.Request.Query("group_by").String()
@@ -189,8 +198,21 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 
 	var fields = context.Request.Query("fields").String()
 	if len(fields) > 0 {
-		splitFields := strings.Split(fields, ",")
-		query = query.Select(splitFields)
+		var columns []string
+		for _, field := range strings.Split(fields, ",") {
+			field = strings.TrimSpace(field)
+			if field == "" || aggregateFieldRegex.MatchString(field) {
+				// "col.count" etc: the Aggregate handler checks it and sets its own Select
+				continue
+			}
+			if _, ok := context.Schema.FieldsByDBName[field]; !ok {
+				return nil, &ErrorInvalidColumn
+			}
+			columns = append(columns, fmt.Sprintf("`%s`.`%s`", table, field))
+		}
+		if len(columns) > 0 {
+			query = query.Select(columns)
+		}
 	}
 
 	var join = context.Request.Query("join").String()
@@ -214,54 +236,25 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	return query, httpErr
 }
 
-func orderNormalizer(input string) string {
-	// Split the input string into parts using the dot separator
-	parts := strings.Split(input, ".")
-
-	if len(parts) < 2 {
-		return "Invalid input"
-	}
-
-	// Get the column name and order (case-insensitive for ASC/DESC)
-	columnName := strings.Join(parts[:len(parts)-1], ".") // Join all but the last part as column name
-	order := strings.ToUpper(parts[len(parts)-1])         // Last part is the order, converted to uppercase
-
-	// Ensure order is valid
-	if order != "ASC" && order != "DESC" {
-		return "Invalid input"
-	}
-
-	return fmt.Sprintf("%s %s", columnName, order)
-}
-
-func parseOrderBy(input, table string) string {
-	// Split by comma to process each order by clause individually
-	clauses := strings.Split(input, ",")
-	for i, cl := range clauses {
+// parseOrderBy turns "col.asc,col2.desc" into an ORDER BY clause. Every column must be a
+// real column of the model; anything else is rejected, never passed through as raw SQL.
+func parseOrderBy(input string, sch *schema.Schema) (string, *Error) {
+	var clauses []string
+	for _, cl := range strings.Split(input, ",") {
 		cl = strings.TrimSpace(cl)
-		// Split by dot to isolate column and asc/desc
-		parts := strings.Split(cl, ".")
-		if len(parts) < 2 {
-			// If no dot found, just return it as is (or handle error)
+		if cl == "" {
 			continue
 		}
-
-		// The last part should be asc or desc (in any case)
-		order := parts[len(parts)-1]
-		// The column is everything before the last part joined by '.'
-		column := strings.Join(parts[:len(parts)-1], ".")
-
-		// Normalize order direction to uppercase
-		order = strings.ToUpper(order)
-		// Check if order is something other than ASC or DESC,
-		// if so, default to ASC (or handle error)
-		if order != "ASC" && order != "DESC" {
-			order = "ASC" // default/fallback
+		column, direction := cl, "ASC"
+		if i := strings.LastIndexAny(cl, ". "); i >= 0 {
+			if d := strings.ToUpper(strings.TrimSpace(cl[i+1:])); d == "ASC" || d == "DESC" {
+				column, direction = strings.TrimSpace(cl[:i]), d
+			}
 		}
-
-		clauses[i] = fmt.Sprintf("`%s`.`%s` %s", table, column, order)
+		if _, ok := sch.FieldsByDBName[column]; !ok {
+			return "", &ErrorInvalidColumn
+		}
+		clauses = append(clauses, fmt.Sprintf("`%s`.`%s` %s", sch.Table, column, direction))
 	}
-
-	// Join all processed clauses with a comma
-	return strings.Join(clauses, ",")
+	return strings.Join(clauses, ","), nil
 }
