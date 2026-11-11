@@ -223,6 +223,10 @@ func (context *Context) ApplyFilters(query *gorm.DB) (*gorm.DB, *Error) {
 	}
 	var httpErr *Error
 	query, httpErr = filterMapper(context.Request.QueryString(), context, query)
+	if httpErr != nil {
+		// filterMapper returns a nil query on error; offset/limit on it would panic.
+		return nil, httpErr
+	}
 
 	var offset = context.Request.Query("offset").Int()
 	if offset > 0 {
