@@ -449,7 +449,10 @@ func (h Handler) Set(context *Context) *Error {
 			return &ErrorUnsafe
 		}
 	}
-	query.Unscoped().Find(loaderPtr)
+	// A failed read would make every input row look new and create duplicates.
+	if err := query.Unscoped().Find(loaderPtr).Error; err != nil {
+		return context.Error(err, 500)
+	}
 	var dbo = context.GetDBO()
 
 	for j := 0; j < loader.Len(); j++ {
